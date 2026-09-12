@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Presupuestador Panadería & Importador PDF</title>
+    <meta name="theme-color" content="#4A3228">
+    <meta name="description" content="Calculadora de costos y precios para recetas de panadería.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <!-- Librería PDF.js para lectura de documentos en el navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        :root {
+            --primary: #4A3228;
+            --accent: #C86D51;
+            --bg: #F5F2EB;
+            --card-bg: #FFFFFF;
+            --text: #2B2B2B;
+            --text-muted: #666666;
+            --success: #1E6B39;
+            --border: #E0DDD5;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 12px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 6px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: #FAFAFA;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            background-color: #FFF;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:active {
+            background-color: var(--accent);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .btn-danger {
+            background-color: #D9534F;
+            color: white;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 10px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--bg);
+            color: var(--primary);
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .summary-box {
+            background: #EFEAE1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+
+        .summary-row.total {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-top: 1px solid var(--border);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .summary-row.highlight {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--success);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .pdf-uploader {
+            border: 2px dashed var(--accent);
+            background-color: #FAF5F2;
+            padding: 15px;
+            text-align: center;
+            border-radius: var(--radius);
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .pdf-uploader input {
+            display: none;
+        }
+
+        .search-box {
+            margin-bottom: 10px;
+        }
+
+        .search-box input {
+            background-color: #FFFFFF;
+            border: 2px solid var(--accent);
+        }
+
+        @media (min-width: 600px) {
+            body { padding: 20px; }
+            header h1 { font-size: 1.8rem; }
+            .form-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🥖 Presupuestador de Panadería</h1>
+    </header>
+
+    <!-- Importador de PDF de Proveedores -->
+    <div class="card">
+        <div class="card-title">📄 Importar Lista de Precios (PDF de Distribuidor)</div>
+        <div class="pdf-uploader" onclick="document.getElementById('pdfInput').click()">
+            <span id="pdfStatus">📁 Haz clic para cargar la lista en PDF de tu proveedor</span>
+            <input type="file" id="pdfInput" accept="application/pdf" onchange="procesarPDF(event)">
+        </div>
+
+        <div id="contenedorCatalogo" style="display: none;">
+            <div class="search-box">
+                <label for="buscarPdfInput">🔍 Buscar insumo en la lista del PDF:</label>
+                <input type="text" id="buscarPdfInput" placeholder="Escribe para buscar (ej: Harina, Chocolate, Manteca)..." oninput="filtrarProductosPdf()">
+            </div>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Producto Extraído</th>
+                            <th>Precio ($)</th>
+                            <th>Envase</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPdf"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información de la Receta -->
+    <div class="card">
+        <div class="card-title">1. Datos del Producto / Receta</div>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="nombreReceta">Nombre del Producto</label>
+                <input type="text" id="nombreReceta" value="Torta Marquise de Chocolate">
+            </div>
+            <div class="form-group">
+                <label for="rendimiento">Rendimiento (Porciones)</label>
+                <input type="number" id="rendimiento" value="12" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+            <div class="form-group">
+                <label for="horasMdo">Tiempo Trabajo (Horas)</label>
+                <input type="number" id="horasMdo" value="2.5" step="0.5" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+            <div class="form-group">
+                <label for="tarifaMdo">Valor Hora ($)</label>
+                <input type="number" id="tarifaMdo" value="1500" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+            <div class="form-group">
+                <label for="cifPct">Gastos Indirectos (%)</label>
+                <input type="number" id="cifPct" value="15" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+            <div class="form-group">
+                <label for="margenPct">Margen Ganancia (%)</label>
+                <input type="number" id="margenPct" value="40" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Agregar Ingredientes Manual o desde PDF -->
+    <div class="card">
+        <div class="card-title">2. Insumo para la Receta</div>
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="ingNombre">Nombre del Ingrediente</label>
+                <input type="text" id="ingNombre" placeholder="Ej: Harina 0000">
+            </div>
+            <div class="form-group">
+                <label for="ingPrecioPkg">Precio Paquete ($)</label>
+                <input type="number" id="ingPrecioPkg" placeholder="0.00" inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label for="ingCantPkg">Formato Paquete</label>
+                <div class="input-group">
+                    <input type="number" id="ingCantPkg" placeholder="1000" inputmode="decimal">
+                    <select id="ingUnitPkg" style="width: 70px;">
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="l">l</option>
+                        <option value="ml">ml</option>
+                        <option value="u">u</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ingCantUsada">Cantidad Usada</label>
+                <div class="input-group">
+                    <input type="number" id="ingCantUsada" placeholder="250" inputmode="decimal">
+                    <select id="ingUnitUsada" style="width: 70px;">
+                        <option value="g">g</option>
+                        <option value="kg">kg</option>
+                        <option value="ml">ml</option>
+                        <option value="l">l</option>
+                        <option value="u">u</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group full-width" style="margin-top: 6px;">
+                <button class="btn btn-primary" onclick="agregarIngrediente()">+ Agregar Insumo a la Receta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detalle de Insumos Agregados -->
+    <div class="card">
+        <div class="card-title">3. Desglose de Receta</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ingrediente</th>
+                        <th>Uso</th>
+                        <th>Costo ($)</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaIngredientes">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted);">No hay ingredientes agregados.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Resumen y Resultados -->
+    <div class="card">
+        <div class="card-title">4. Resumen de Presupuesto</div>
+        <div class="summary-row">
+            <span>Materia Prima Directa:</span>
+            <span id="resMateriaPrima">$0.00</span>
+        </div>
+        <div class="summary-row">
+            <span>Mano de Obra Directa:</span>
+            <span id="resMdo">$0.00</span>
+        </div>
+        <div class="summary-row">
+            <span>Costos Indirectos (CIF):</span>
+            <span id="resCif">$0.00</span>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row total">
+                <span>COSTO TOTAL LOTE:</span>
+                <span id="resCostoTotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Costo por Unidad:</span>
+                <span id="resCostoUnitario">$0.00</span>
+            </div>
+            <div class="summary-row highlight" style="margin-top: 8px;">
+                <span>PRECIO VENTA RECOMENDADO:</span>
+                <span id="resPrecioTotal">$0.00</span>
+            </div>
+            <div class="summary-row highlight">
+                <span>Precio Sugerido por Unidad:</span>
+                <span id="resPrecioUnitario">$0.00</span>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-outline" onclick="limpiarTodo()">Limpiar</button>
+            <button class="btn btn-accent" style="width:100%" onclick="exportarReporte()">Exportar (.txt)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let ingredientes = [];
+    let productosPdfExtraidos = [];
+
+    // --- LÓGICA DE LECTURA DE PDF ---
+    async function procesarPDF(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const statusLabel = document.getElementById("pdfStatus");
+        statusLabel.innerText = "⏳ Analizando PDF... Por favor espera.";
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let lineasTexto = [];
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                let lastY = null;
+                let linea = "";
+
+                textContent.items.forEach(item => {
+                    if (lastY !== null && Math.abs(item.transform[5] - lastY) > 4) {
+                        if (linea.trim().length > 0) lineasTexto.push(linea.trim());
+                        linea = "";
+                    }
+                    linea += " " + item.str;
+                    lastY = item.transform[5];
+                });
+                if (linea.trim().length > 0) lineasTexto.push(linea.trim());
+            }
+
+            extraerProductos(lineasTexto);
+            statusLabel.innerText = `✅ PDF Cargado: ${file.name} (${productosPdfExtraidos.length} productos detectados)`;
+        } catch (error) {
+            console.error(error);
+            alert("Error al leer el archivo PDF. Asegúrate de que no esté protegido con contraseña.");
+            statusLabel.innerText = "📁 Haz clic para cargar la lista en PDF de tu proveedor";
+        }
+    }
+
+    function extraerProductos(lineas) {
+        productosPdfExtraidos = [];
+        document.getElementById("buscarPdfInput").value = "";
+        
+        const regexPrecio = /(\$?\s*\d+[\.,]?\d*[\.,]\d{2}|\$?\s*\d{3,})/;
+        const regexUnidad = /(\d+[\.,]?\d*)\s*(kg|g|gr|l|ml|u|unid|porcion)/i;
+
+        lineas.forEach(linea => {
+            const matchPrecio = linea.match(regexPrecio);
+            if (matchPrecio) {
+                let precioStr = matchPrecio[0].replace("$", "").trim();
+                if (precioStr.includes(",") && precioStr.includes(".")) {
+                    precioStr = precioStr.replace(".", "").replace(",", ".");
+                } else if (precioStr.includes(",")) {
+                    precioStr = precioStr.replace(",", ".");
+                }
+                const precio = parseFloat(precioStr);
+
+                if (!isNaN(precio) && precio > 0) {
+                    let nombre = linea.replace(matchPrecio[0], "").trim();
+                    
+                    let cant = 1;
+                    let unit = "u";
+                    const matchUnidad = linea.match(regexUnidad);
+                    if (matchUnidad) {
+                        cant = parseFloat(matchUnidad[1].replace(",", ".")) || 1;
+                        unit = matchUnidad[2].toLowerCase();
+                        if (unit === "gr") unit = "g";
+                        if (unit === "unid") unit = "u";
+                    }
+
+                    if (nombre.length > 2) {
+                        productosPdfExtraidos.push({
+                            nombre: nombre.substring(0, 45),
+                            precio: precio,
+                            cantPkg: cant,
+                            unitPkg: unit
+                        });
+                    }
+                }
+            }
+        });
+
+        renderizarTablaPdf(productosPdfExtraidos);
+    }
+
+    function filtrarProductosPdf() {
+        const query = document.getElementById("buscarPdfInput").value.toLowerCase().trim();
+        const productosFiltrados = productosPdfExtraidos.filter(item => 
+            item.nombre.toLowerCase().includes(query)
+        );
+        renderizarTablaPdf(productosFiltrados);
+    }
+
+    function renderizarTablaPdf(listaProductos) {
+        const tbody = document.getElementById("tablaPdf");
+        const contenedor = document.getElementById("contenedorCatalogo");
+        tbody.innerHTML = "";
+
+        if (productosPdfExtraidos.length === 0) {
+            contenedor.style.display = "none";
+            alert("No se detectaron líneas con precios en el PDF.");
+            return;
+        }
+
+        contenedor.style.display = "block";
+
+        if (listaProductos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin coincidencias para la búsqueda.</td></tr>';
+            return;
+        }
+
+        listaProductos.slice(0, 50).forEach((item) => {
+            const originalIndex = productosPdfExtraidos.indexOf(item);
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${item.nombre}</strong></td>
+                <td>$${item.precio.toFixed(2)}</td>
+                <td>${item.cantPkg} ${item.unitPkg}</td>
+                <td><button class="btn btn-success" onclick="cargarInsumoDesdePdf(${originalIndex})">Usar</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function cargarInsumoDesdePdf(index) {
+        const item = productosPdfExtraidos[index];
+        document.getElementById("ingNombre").value = item.nombre;
+        document.getElementById("ingPrecioPkg").value = item.precio;
+        document.getElementById("ingCantPkg").value = item.cantPkg;
+        document.getElementById("ingUnitPkg").value = item.unitPkg;
+        document.getElementById("ingCantUsada").focus();
+    }
+
+    // --- LÓGICA DE PRESUPUESTO ---
+    function convertirABase(cantidad, unidad) {
+        if (unidad === "kg" || unidad === "l") return cantidad * 1000;
+        return cantidad;
+    }
+
+    function agregarIngrediente() {
+        const nombre = document.getElementById("ingNombre").value.trim();
+        const precioPkg = parseFloat(document.getElementById("ingPrecioPkg").value);
+        const cantPkg = parseFloat(document.getElementById("ingCantPkg").value);
+        const unitPkg = document.getElementById("ingUnitPkg").value;
+        const cantUsada = parseFloat(document.getElementById("ingCantUsada").value);
+        const unitUsada = document.getElementById("ingUnitUsada").value;
+
+        if (!nombre || isNaN(precioPkg) || isNaN(cantPkg) || isNaN(cantUsada)) {
+            alert("Por favor complete todos los campos del ingrediente con valores numéricos válidos.");
+            return;
+        }
+
+        const basePkg = convertirABase(cantPkg, unitPkg);
+        const baseUsada = convertirABase(cantUsada, unitUsada);
+
+        if (basePkg <= 0) {
+            alert("La cantidad del paquete debe ser mayor a 0.");
+            return;
+        }
+
+        const costo = (precioPkg / basePkg) * baseUsada;
+
+        ingredientes.push({
+            nombre: nombre,
+            fmtPkg: `${cantPkg} ${unitPkg}`,
+            fmtUso: `${cantUsada} ${unitUsada}`,
+            costo: costo
+        });
+
+        document.getElementById("ingNombre").value = "";
+        document.getElementById("ingPrecioPkg").value = "";
+        document.getElementById("ingCantPkg").value = "";
+        document.getElementById("ingCantUsada").value = "";
+
+        actualizarTabla();
+        calcularTotales();
+    }
+
+    function eliminarIngrediente(index) {
+        ingredientes.splice(index, 1);
+        actualizarTabla();
+        calcularTotales();
+    }
+
+    function actualizarTabla() {
+        const tbody = document.getElementById("tablaIngredientes");
+        tbody.innerHTML = "";
+
+        if (ingredientes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No hay ingredientes agregados.</td></tr>';
+            return;
+        }
+
+        ingredientes.forEach((ing, index) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${ing.nombre}</strong></td>
+                <td>${ing.fmtUso}</td>
+                <td>$${ing.costo.toFixed(2)}</td>
+                <td><button class="btn btn-danger" onclick="eliminarIngrediente(${index})">X</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function calcularTotales() {
+        const rendimiento = Math.max(1, parseFloat(document.getElementById("rendimiento").value) || 1);
+        const horasMdo = parseFloat(document.getElementById("horasMdo").value) || 0;
+        const tarifaMdo = parseFloat(document.getElementById("tarifaMdo").value) || 0;
+        const cifPct = parseFloat(document.getElementById("cifPct").value) || 0;
+        const margenPct = parseFloat(document.getElementById("margenPct").value) || 0;
+
+        const totalMateriaPrima = ingredientes.reduce((sum, item) => sum + item.costo, 0);
+        const totalMdo = horasMdo * tarifaMdo;
+        const subtotalDirecto = totalMateriaPrima + totalMdo;
+        const totalCif = subtotalDirecto * (cifPct / 100);
+
+        const costoTotal = subtotalDirecto + totalCif;
+        const costoUnitario = costoTotal / rendimiento;
+
+        const precioTotal = costoTotal * (1 + (margenPct / 100));
+        const precioUnitario = precioTotal / rendimiento;
+
+        document.getElementById("resMateriaPrima").innerText = `$${totalMateriaPrima.toFixed(2)}`;
+        document.getElementById("resMdo").innerText = `$${totalMdo.toFixed(2)}`;
+        document.getElementById("resCif").innerText = `$${totalCif.toFixed(2)}`;
+
+        document.getElementById("resCostoTotal").innerText = `$${costoTotal.toFixed(2)}`;
+        document.getElementById("resCostoUnitario").innerText = `$${costoUnitario.toFixed(2)}`;
+        document.getElementById("resPrecioTotal").innerText = `$${precioTotal.toFixed(2)}`;
+        document.getElementById("resPrecioUnitario").innerText = `$${precioUnitario.toFixed(2)}`;
+    }
+
+    function limpiarTodo() {
+        if (confirm("¿Desea limpiar todos los datos del presupuesto?")) {
+            ingredientes = [];
+            actualizarTabla();
+            calcularTotales();
+        }
+    }
+
+    function exportarReporte() {
+        if (ingredientes.length === 0) {
+            alert("Agregue al menos un ingrediente para exportar.");
+            return;
+        }
+
+        const nombreReceta = document.getElementById("nombreReceta").value.trim() || "Receta";
+        const fecha = new Date().toLocaleDateString();
+
+        let texto = `========================================\n`;
+        texto += ` PRESUPUESTO: ${nombreReceta.toUpperCase()}\n`;
+        texto += ` Fecha: ${fecha}\n`;
+        texto += `========================================\n\n`;
+
+        texto += `INGREDIENTES:\n`;
+        ingredientes.forEach(ing => {
+            texto += `- ${ing.nombre} (${ing.fmtUso}): $${ing.costo.toFixed(2)}\n`;
+        });
+
+        texto += `\nRESUMEN:\n`;
+        texto += `- Materia Prima: ${document.getElementById("resMateriaPrima").innerText}\n`;
+        texto += `- Mano de Obra: ${document.getElementById("resMdo").innerText}\n`;
+        texto += `- CIF: ${document.getElementById("resCif").innerText}\n`;
+        texto += `----------------------------------------\n`;
+        texto += `- COSTO TOTAL LOTE: ${document.getElementById("resCostoTotal").innerText}\n`;
+        texto += `- Costo por Unidad: ${document.getElementById("resCostoUnitario").innerText}\n`;
+        texto += `- PRECIO VENTA SUGERIDO: ${document.getElementById("resPrecioTotal").innerText}\n`;
+        texto += `- Precio por Unidad: ${document.getElementById("resPrecioUnitario").innerText}\n`;
+        texto += `========================================\n`;
+
+        const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Presupuesto_${nombreReceta.replace(/\s+/g, "_")}.txt`;
+        link.click();
+    }
+
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("./sw.js").catch((error) => {
+                console.error("No se pudo activar el modo sin conexión:", error);
+            });
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "Presupuestador de Panadería",
+  "short_name": "Presupuestos",
+  "description": "Calculadora de costos y precios para recetas de panadería.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F5F2EB",
+  "theme_color": "#4A3228",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
