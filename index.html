@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Presupuestador Panadería & Importador PDF</title>
-    <meta name="theme-color" content="#4A3228">
-    <meta name="description" content="Calculadora de costos y precios para recetas de panadería.">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
     <!-- Librería PDF.js para lectura de documentos en el navegador -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
@@ -146,6 +142,14 @@
             font-size: 0.8rem;
         }
 
+        .btn-warning {
+            background-color: #E67E22;
+            color: white;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            margin-right: 4px;
+        }
+
         .btn-danger {
             background-color: #D9534F;
             color: white;
@@ -245,6 +249,10 @@
             border: 2px solid var(--accent);
         }
 
+        .actions-cell {
+            white-space: nowrap;
+        }
+
         @media (min-width: 600px) {
             body { padding: 20px; }
             header h1 { font-size: 1.8rem; }
@@ -321,8 +329,8 @@
     </div>
 
     <!-- Agregar Ingredientes Manual o desde PDF -->
-    <div class="card">
-        <div class="card-title">2. Insumo para la Receta</div>
+    <div class="card" id="seccionInsumo">
+        <div class="card-title" id="tituloInsumoForm">2. Insumo para la Receta</div>
         <div class="form-grid">
             <div class="form-group full-width">
                 <label for="ingNombre">Nombre del Ingrediente</label>
@@ -359,7 +367,7 @@
                 </div>
             </div>
             <div class="form-group full-width" style="margin-top: 6px;">
-                <button class="btn btn-primary" onclick="agregarIngrediente()">+ Agregar Insumo a la Receta</button>
+                <button class="btn btn-primary" id="btnAgregarIng" onclick="agregarOActualizarIngrediente()">+ Agregar Insumo a la Receta</button>
             </div>
         </div>
     </div>
@@ -433,6 +441,7 @@
 
     let ingredientes = [];
     let productosPdfExtraidos = [];
+    let indiceEdicion = -1; // -1 significa que estamos agregando un nuevo ingrediente
 
     // --- LÓGICA DE LECTURA DE PDF ---
     async function procesarPDF(event) {
@@ -560,6 +569,7 @@
     }
 
     function cargarInsumoDesdePdf(index) {
+        cancelarEdicion();
         const item = productosPdfExtraidos[index];
         document.getElementById("ingNombre").value = item.nombre;
         document.getElementById("ingPrecioPkg").value = item.precio;
@@ -574,7 +584,7 @@
         return cantidad;
     }
 
-    function agregarIngrediente() {
+    function agregarOActualizarIngrediente() {
         const nombre = document.getElementById("ingNombre").value.trim();
         const precioPkg = parseFloat(document.getElementById("ingPrecioPkg").value);
         const cantPkg = parseFloat(document.getElementById("ingCantPkg").value);
@@ -597,23 +607,74 @@
 
         const costo = (precioPkg / basePkg) * baseUsada;
 
-        ingredientes.push({
+        const objetoIngrediente = {
             nombre: nombre,
+            precioPkg: precioPkg,
+            cantPkg: cantPkg,
+            unitPkg: unitPkg,
+            cantUsada: cantUsada,
+            unitUsada: unitUsada,
             fmtPkg: `${cantPkg} ${unitPkg}`,
             fmtUso: `${cantUsada} ${unitUsada}`,
             costo: costo
-        });
+        };
 
-        document.getElementById("ingNombre").value = "";
-        document.getElementById("ingPrecioPkg").value = "";
-        document.getElementById("ingCantPkg").value = "";
-        document.getElementById("ingCantUsada").value = "";
+        if (indiceEdicion >= 0) {
+            // Modo edición: actualiza el objeto existente
+            ingredientes[indiceEdicion] = objetoIngrediente;
+            cancelarEdicion();
+        } else {
+            // Modo inserción: añade uno nuevo
+            ingredientes.push(objetoIngrediente);
+            limpiarFormularioInsumo();
+        }
 
         actualizarTabla();
         calcularTotales();
     }
 
+    function editarIngrediente(index) {
+        const ing = ingredientes[index];
+        indiceEdicion = index;
+
+        document.getElementById("ingNombre").value = ing.nombre;
+        document.getElementById("ingPrecioPkg").value = ing.precioPkg;
+        document.getElementById("ingCantPkg").value = ing.cantPkg;
+        document.getElementById("ingUnitPkg").value = ing.unitPkg;
+        document.getElementById("ingCantUsada").value = ing.cantUsada;
+        document.getElementById("ingUnitUsada").value = ing.unitUsada;
+
+        const btn = document.getElementById("btnAgregarIng");
+        btn.innerText = "💾 Guardar Cambios del Insumo";
+        btn.style.backgroundColor = "var(--success)";
+
+        document.getElementById("tituloInsumoForm").innerText = "✏️ Editando Insumo de la Receta";
+
+        // Desplazar suavemente hasta el formulario de edición
+        document.getElementById("seccionInsumo").scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById("ingCantUsada").focus();
+    }
+
+    function cancelarEdicion() {
+        indiceEdicion = -1;
+        limpiarFormularioInsumo();
+        const btn = document.getElementById("btnAgregarIng");
+        btn.innerText = "+ Agregar Insumo a la Receta";
+        btn.style.backgroundColor = "var(--primary)";
+        document.getElementById("tituloInsumoForm").innerText = "2. Insumo para la Receta";
+    }
+
+    function limpiarFormularioInsumo() {
+        document.getElementById("ingNombre").value = "";
+        document.getElementById("ingPrecioPkg").value = "";
+        document.getElementById("ingCantPkg").value = "";
+        document.getElementById("ingCantUsada").value = "";
+    }
+
     function eliminarIngrediente(index) {
+        if (indiceEdicion === index) {
+            cancelarEdicion();
+        }
         ingredientes.splice(index, 1);
         actualizarTabla();
         calcularTotales();
@@ -634,7 +695,10 @@
                 <td><strong>${ing.nombre}</strong></td>
                 <td>${ing.fmtUso}</td>
                 <td>$${ing.costo.toFixed(2)}</td>
-                <td><button class="btn btn-danger" onclick="eliminarIngrediente(${index})">X</button></td>
+                <td class="actions-cell">
+                    <button class="btn btn-warning" onclick="editarIngrediente(${index})">✏️</button>
+                    <button class="btn btn-danger" onclick="eliminarIngrediente(${index})">X</button>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -671,6 +735,7 @@
     function limpiarTodo() {
         if (confirm("¿Desea limpiar todos los datos del presupuesto?")) {
             ingredientes = [];
+            cancelarEdicion();
             actualizarTabla();
             calcularTotales();
         }
@@ -711,14 +776,6 @@
         link.href = URL.createObjectURL(blob);
         link.download = `Presupuesto_${nombreReceta.replace(/\s+/g, "_")}.txt`;
         link.click();
-    }
-
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-            navigator.serviceWorker.register("./sw.js").catch((error) => {
-                console.error("No se pudo activar el modo sin conexión:", error);
-            });
-        });
     }
 </script>
 
