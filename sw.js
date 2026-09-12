@@ -1,4 +1,4 @@
-const CACHE_NAME = "presupuestador-panaderia-v1";
+const CACHE_NAME = "presupuestador-panaderia-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
