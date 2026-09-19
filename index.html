@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cotizador de Pastelería Profesional</title>
+    <meta name="theme-color" content="#5D3A00">
+    <meta name="description" content="Cotizador profesional de pastelería y panadería.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <!-- Librería PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -35,7 +40,7 @@
         }
 
         .container {
-            max-width: 980px;
+            max-width: 920px;
             margin: 0 auto;
         }
 
@@ -46,7 +51,7 @@
 
         header h1 {
             color: var(--primary);
-            font-size: 1.7rem;
+            font-size: 1.6rem;
             margin-bottom: 4px;
         }
 
@@ -268,26 +273,6 @@
             display: flex;
             gap: 10px;
             margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .toolbar {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .switch-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            background: #FFF7EE;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 12px;
-            margin-top: 12px;
         }
 
         .preset-grid {
@@ -326,12 +311,6 @@
             margin-bottom: 8px;
         }
 
-        .small-note {
-            font-size: 0.76rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-
         @media (min-width: 600px) {
             body { padding: 20px; }
             header h1 { font-size: 2rem; }
@@ -346,6 +325,7 @@
         <h1>🎂 Cotizador de Pastelería</h1>
     </header>
 
+    <!-- IMPORTADOR DE PDFS MÚLTIPLES -->
     <div class="card">
         <div class="card-title">📄 1. Importar Listas de Precios (PDFs por Categoría)</div>
         <div class="pdf-grid">
@@ -375,6 +355,7 @@
                 <label for="buscarPdfInput">🔍 Buscar insumo en el catálogo consolidado de PDFs:</label>
                 <input type="text" id="buscarPdfInput" placeholder="Buscar harina, chocolate, caja, dulce..." oninput="filtrarProductosPdf()">
             </div>
+
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -392,6 +373,7 @@
         </div>
     </div>
 
+    <!-- DATOS GENERALES DEL PRODUCTO -->
     <div class="card">
         <div class="card-title">2. Datos de la Torta / Preparación</div>
         <div class="form-grid">
@@ -416,15 +398,17 @@
                 <input type="number" id="cifPct" value="15" inputmode="decimal" oninput="calcularTotales()">
             </div>
             <div class="form-group">
-                <label for="margenPct">Margen Ganancia General (%)</label>
+                <label for="margenPct">Margen Ganancia (%)</label>
                 <input type="number" id="margenPct" value="40" inputmode="decimal" oninput="calcularTotales()">
             </div>
         </div>
     </div>
 
+    <!-- PREAJUSTES: MASAS, BIZCOCHUELOS, RELLENOS, TOPGLASS, COBERTURAS Y PACKING -->
     <div class="card">
         <div class="card-title">3. Preparaciones Base, Rellenos, Coberturas y Packing Rápidos</div>
         <div class="preset-grid">
+            <!-- Bizcochuelo -->
             <div class="preset-card">
                 <div>
                     <h4>🥮 Mezcla para Bizcochuelo</h4>
@@ -446,6 +430,7 @@
                 <button class="btn btn-preset" onclick="cargarBizcochueloPreset()">+ Cargar Bizcochuelo</button>
             </div>
 
+            <!-- Masas Quebradas -->
             <div class="preset-card">
                 <div>
                     <h4>🥧 Masas Quebradas</h4>
@@ -465,6 +450,7 @@
                 <button class="btn btn-preset" onclick="cargarMasaQuebradaPreset()">+ Cargar Masa</button>
             </div>
 
+            <!-- Rellenos Clásicos y Mousse Integrada -->
             <div class="preset-card">
                 <div>
                     <h4>🍓 Subconjuntos de Rellenos</h4>
@@ -501,6 +487,7 @@
                 <button class="btn btn-preset" onclick="cargarRellenoPreset()">+ Cargar Relleno</button>
             </div>
 
+            <!-- Pastas Saborizantes Topglass (Relleno Separado) -->
             <div class="preset-card">
                 <div>
                     <h4>✨ Pastas Saborizantes Topglass</h4>
@@ -525,6 +512,7 @@
                 <button class="btn btn-preset" onclick="cargarTopglassRellenoPreset()">+ Cargar Saborizante</button>
             </div>
 
+            <!-- Cobertura de Torta -->
             <div class="preset-card">
                 <div>
                     <h4>🎨 Cobertura de Torta</h4>
@@ -558,6 +546,7 @@
                 <button class="btn btn-preset" onclick="cargarCoberturaPreset()">+ Cargar Cobertura</button>
             </div>
 
+            <!-- Packing -->
             <div class="preset-card">
                 <div>
                     <h4>📦 Empaque / Packing</h4>
@@ -573,8 +562,11 @@
         </div>
     </div>
 
+    <!-- FORMULARIO DE INSUMOS INDIVIDUALES Y EDICIÓN -->
     <div class="card" id="seccionInsumo">
         <div class="card-title" id="tituloInsumoForm">4. Agregar / Editar Insumo Manual o desde PDF</div>
+
+        <!-- Seleccionador rápido de PDF en edición -->
         <div class="pdf-select-box">
             <label for="selectInsumoPdf">💡 Traer datos desde las listas PDF cargadas:</label>
             <select id="selectInsumoPdf" onchange="seleccionarInsumoDesdePdfCombo(this.value)">
@@ -631,10 +623,16 @@
         </div>
     </div>
 
+    <!-- DETALLE DE INSUMOS DIVIDIDO EN 3 PARTES -->
     <div class="card">
         <div class="card-title">5. Desglose Interno de Costos Directos</div>
-        <div id="alertWarningFalta" class="alert-warning">⚠️ Falta cargar algún item en los costos directos.</div>
 
+        <!-- CARTEL DE ADVERTENCIA -->
+        <div id="alertWarningFalta" class="alert-warning">
+            ⚠️ Falta cargar algún item en los costos directos.
+        </div>
+
+        <!-- 1. Bizcochuelo / Masas -->
         <div class="cat-block">
             <div class="cat-header">
                 <span>🥮 1. Ingredientes para Bizcochuelo / Masas</span>
@@ -657,6 +655,7 @@
             </div>
         </div>
 
+        <!-- 2. Rellenos -->
         <div class="cat-block">
             <div class="cat-header">
                 <span>🍓 2. Rellenos</span>
@@ -679,6 +678,7 @@
             </div>
         </div>
 
+        <!-- 3. Packing -->
         <div class="cat-block">
             <div class="cat-header">
                 <span>📦 3. Packing / Empaque</span>
@@ -702,42 +702,9 @@
         </div>
     </div>
 
+    <!-- RESUMEN Y EXPORTACIÓN -->
     <div class="card">
-        <div class="card-title">6. Margen por Categoría / Guardado</div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="margenBizPct">Margen Bizcochuelo/Masas (%)</label>
-                <input type="number" id="margenBizPct" value="40" inputmode="decimal" oninput="calcularTotales()">
-            </div>
-            <div class="form-group">
-                <label for="margenRellenosPct">Margen Rellenos (%)</label>
-                <input type="number" id="margenRellenosPct" value="35" inputmode="decimal" oninput="calcularTotales()">
-            </div>
-            <div class="form-group">
-                <label for="margenPackingPct">Margen Packing (%)</label>
-                <input type="number" id="margenPackingPct" value="30" inputmode="decimal" oninput="calcularTotales()">
-            </div>
-        </div>
-
-        <div class="toolbar">
-            <button class="btn btn-accent" onclick="guardarPresupuestoLocal()">💾 Guardar presupuesto</button>
-            <button class="btn btn-outline" onclick="cargarPresupuestoLocal()">📂 Recuperar último</button>
-            <button class="btn btn-outline" onclick="borrarPresupuestoLocal()">🗑️ Borrar guardado</button>
-        </div>
-
-        <div class="switch-row">
-            <label for="modoReporte">Modo de reporte</label>
-            <select id="modoReporte" style="max-width: 200px;">
-                <option value="cliente">Cliente</option>
-                <option value="interno">Interno</option>
-            </select>
-        </div>
-        <div class="small-note">Los datos se guardan en el navegador para recuperar el presupuesto sin perder el trabajo.</div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">7. Resumen de Presupuesto</div>
-
+        <div class="card-title">6. Resumen de Presupuesto</div>
         <div class="summary-row">
             <span>Materia Prima + Packing Directo:</span>
             <span id="resMateriaPrima">$0.00</span>
@@ -760,18 +727,6 @@
                 <span>Costo por Porción/Unidad:</span>
                 <span id="resCostoUnitario">$0.00</span>
             </div>
-            <div class="summary-row">
-                <span>Precio sugerido Bizcochuelo/Masas:</span>
-                <span id="resPrecioBiz">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>Precio sugerido Rellenos:</span>
-                <span id="resPrecioRellenos">$0.00</span>
-            </div>
-            <div class="summary-row">
-                <span>Precio sugerido Packing:</span>
-                <span id="resPrecioPacking">$0.00</span>
-            </div>
             <div class="summary-row highlight" style="margin-top: 8px;">
                 <span>PRECIO VENTA RECOMENDADO:</span>
                 <span id="resPrecioTotal">$0.00</span>
@@ -780,8 +735,7 @@
 
         <div class="action-bar">
             <button class="btn btn-outline" onclick="limpiarTodo()">Limpiar Receta</button>
-            <button class="btn btn-accent" onclick="exportarReporteCliente()">📋 Exportar .txt</button>
-            <button class="btn btn-accent" onclick="exportarPdfReal()">📄 Exportar PDF</button>
+            <button class="btn btn-accent" style="width:100%" onclick="exportarReporteCliente()">📋 Exportar Presupuesto Cliente (.txt)</button>
         </div>
     </div>
 </div>
@@ -789,56 +743,63 @@
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    const STORAGE_KEY = 'presupuesto_panaderia_state_v1';
-
     let ingredientes = [];
     let pdfTortas = [];
     let pdfRellenos = [];
     let pdfPacking = [];
     let pdfConsolidado = [];
-    let indiceEdicion = -1;
 
+    let indiceEdicion = -1;
+    let ultimoCargadoCat = "";
+
+    // Registro de especificaciones de la torta para el presupuesto del cliente
     let registroArmado = {
-        bizcochuelo: '',
-        diametroTexto: '',
-        sabor: '',
+        bizcochuelo: "",
+        diametroTexto: "",
+        sabor: "",
         rellenos: [],
-        cobertura: ''
+        cobertura: ""
     };
 
+    // Control dinámico de submenú Mousse en Rellenos
     function toggleMousseSubmenu(val) {
-        const box = document.getElementById('boxMousseSubmenu');
-        box.style.display = (val === 'mousse') ? 'block' : 'none';
+        const box = document.getElementById("boxMousseSubmenu");
+        if (val === "mousse") {
+            box.style.display = "block";
+        } else {
+            box.style.display = "none";
+        }
     }
 
+    // --- PROCESAMIENTO DE PDFS ---
     async function procesarPDF(event, categoria) {
         const file = event.target.files[0];
         if (!file) return;
 
         let stElem;
-        if (categoria === 'tortas') stElem = document.getElementById('stTortas');
-        else if (categoria === 'rellenos') stElem = document.getElementById('stRellenos');
-        else stElem = document.getElementById('stPacking');
+        if (categoria === 'tortas') stElem = document.getElementById("stTortas");
+        else if (categoria === 'rellenos') stElem = document.getElementById("stRellenos");
+        else stElem = document.getElementById("stPacking");
 
-        stElem.innerText = '⏳ Procesando PDF...';
+        stElem.innerText = "⏳ Procesando PDF...";
 
         try {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            const lineasTexto = [];
+            let lineasTexto = [];
 
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
                 let lastY = null;
-                let linea = '';
+                let linea = "";
 
                 textContent.items.forEach(item => {
                     if (lastY !== null && Math.abs(item.transform[5] - lastY) > 4) {
                         if (linea.trim().length > 0) lineasTexto.push(linea.trim());
-                        linea = '';
+                        linea = "";
                     }
-                    linea += ' ' + item.str;
+                    linea += " " + item.str;
                     lastY = item.transform[5];
                 });
                 if (linea.trim().length > 0) lineasTexto.push(linea.trim());
@@ -850,56 +811,57 @@
             else if (categoria === 'rellenos') pdfRellenos = extraidos;
             else if (categoria === 'packing') pdfPacking = extraidos;
 
+            ultimoCargadoCat = categoria;
             consolidarPdfs();
+
             stElem.innerText = `✅ ${file.name} (${extraidos.length} prod.)`;
         } catch (error) {
             console.error(error);
-            alert('Error al leer el PDF. Asegúrate de que sea un archivo PDF válido.');
-            stElem.innerText = '📁 Haz clic para reintentar';
+            alert("Error al leer el PDF. Asegúrate de que sea un archivo PDF válido.");
+            stElem.innerText = "📁 Haz clic para reintentar";
         }
     }
 
     function extraerProductosDeTexto(lineas, origen) {
-        const lista = [];
+        let lista = [];
         const regexPrecio = /(\$?\s*\d+[\.,]?\d*[\.,]\d{2}|\$?\s*\d{3,})/;
         const regexUnidad = /(\d+[\.,]?\d*)\s*(kg|g|gr|l|ml|u|unid|porcion)/i;
 
         lineas.forEach(linea => {
             const matchPrecio = linea.match(regexPrecio);
-            if (!matchPrecio) return;
+            if (matchPrecio) {
+                let precioStr = matchPrecio[0].replace("$", "").trim();
+                if (precioStr.includes(",") && precioStr.includes(".")) {
+                    precioStr = precioStr.replace(".", "").replace(",", ".");
+                } else if (precioStr.includes(",")) {
+                    precioStr = precioStr.replace(",", ".");
+                }
+                const precio = parseFloat(precioStr);
 
-            let precioStr = matchPrecio[0].replace('$', '').trim();
-            if (precioStr.includes(',') && precioStr.includes('.')) {
-                precioStr = precioStr.replace('.', '').replace(',', '.');
-            } else if (precioStr.includes(',')) {
-                precioStr = precioStr.replace(',', '.');
-            }
+                if (!isNaN(precio) && precio > 0) {
+                    let nombre = linea.replace(matchPrecio[0], "").trim();
+                    let cant = 1;
+                    let unit = "u";
+                    const matchUnidad = linea.match(regexUnidad);
+                    if (matchUnidad) {
+                        cant = parseFloat(matchUnidad[1].replace(",", ".")) || 1;
+                        unit = matchUnidad[2].toLowerCase();
+                        if (unit === "gr") unit = "g";
+                        if (unit === "unid") unit = "u";
+                    }
 
-            const precio = parseFloat(precioStr);
-            if (isNaN(precio) || precio <= 0) return;
-
-            let nombre = linea.replace(matchPrecio[0], '').trim();
-            let cant = 1;
-            let unit = 'u';
-            const matchUnidad = linea.match(regexUnidad);
-            if (matchUnidad) {
-                cant = parseFloat(matchUnidad[1].replace(',', '.')) || 1;
-                unit = matchUnidad[2].toLowerCase();
-                if (unit === 'gr') unit = 'g';
-                if (unit === 'unid') unit = 'u';
-            }
-
-            if (nombre.length > 2) {
-                lista.push({
-                    nombre: nombre.substring(0, 50),
-                    precio: precio,
-                    cantPkg: cant,
-                    unitPkg: unit,
-                    origen: origen
-                });
+                    if (nombre.length > 2) {
+                        lista.push({
+                            nombre: nombre.substring(0, 50),
+                            precio: precio,
+                            cantPkg: cant,
+                            unitPkg: unit,
+                            origen: origen
+                        });
+                    }
+                }
             }
         });
-
         return lista;
     }
 
@@ -911,21 +873,20 @@
 
     function usarReferenciasRecientes() {
         if (pdfConsolidado.length === 0) {
-            alert('Aún no has cargado ningún archivo PDF.');
+            alert("Aún no has cargado ningún archivo PDF.");
             return;
         }
-
-        document.getElementById('contenedorCatalogo').style.display = 'block';
-        document.getElementById('buscarPdfInput').value = '';
+        document.getElementById("contenedorCatalogo").style.display = "block";
+        document.getElementById("buscarPdfInput").value = "";
         renderizarTablaPdf(pdfConsolidado);
         alert(`Se han cargado ${pdfConsolidado.length} referencias de precios desde los PDFs recientemente importados.`);
     }
 
     function actualizarSelectPdfCombo() {
-        const combo = document.getElementById('selectInsumoPdf');
+        const combo = document.getElementById("selectInsumoPdf");
         combo.innerHTML = '<option value="">-- Seleccionar un insumo extraído del PDF --</option>';
         pdfConsolidado.forEach((item, index) => {
-            const opt = document.createElement('option');
+            const opt = document.createElement("option");
             opt.value = index;
             opt.innerText = `[${item.origen.toUpperCase()}] ${item.nombre} - $${item.precio} (${item.cantPkg} ${item.unitPkg})`;
             combo.appendChild(opt);
@@ -933,39 +894,39 @@
     }
 
     function seleccionarInsumoDesdePdfCombo(indexVal) {
-        if (indexVal === '' || indexVal === undefined) return;
-        const item = pdfConsolidado[parseInt(indexVal, 10)];
-        if (!item) return;
+        if (indexVal === "" || indexVal === undefined) return;
+        const item = pdfConsolidado[parseInt(indexVal)];
+        if (item) {
+            document.getElementById("ingNombre").value = item.nombre;
+            document.getElementById("ingPrecioPkg").value = item.precio;
+            document.getElementById("ingCantPkg").value = item.cantPkg;
+            document.getElementById("ingUnitPkg").value = item.unitPkg;
 
-        document.getElementById('ingNombre').value = item.nombre;
-        document.getElementById('ingPrecioPkg').value = item.precio;
-        document.getElementById('ingCantPkg').value = item.cantPkg;
-        document.getElementById('ingUnitPkg').value = item.unitPkg;
+            if (item.origen === 'tortas') document.getElementById("ingCategoria").value = "bizcochuelo";
+            else if (item.origen === 'rellenos') document.getElementById("ingCategoria").value = "rellenos";
+            else if (item.origen === 'packing') document.getElementById("ingCategoria").value = "packing";
 
-        if (item.origen === 'tortas') document.getElementById('ingCategoria').value = 'bizcochuelo';
-        else if (item.origen === 'rellenos') document.getElementById('ingCategoria').value = 'rellenos';
-        else if (item.origen === 'packing') document.getElementById('ingCategoria').value = 'packing';
-
-        document.getElementById('ingCantUsada').focus();
+            document.getElementById("ingCantUsada").focus();
+        }
     }
 
     function filtrarProductosPdf() {
-        const query = document.getElementById('buscarPdfInput').value.toLowerCase().trim();
+        const query = document.getElementById("buscarPdfInput").value.toLowerCase().trim();
         const filtrados = pdfConsolidado.filter(item => item.nombre.toLowerCase().includes(query));
         renderizarTablaPdf(filtrados);
     }
 
     function renderizarTablaPdf(lista) {
-        const tbody = document.getElementById('tablaPdf');
-        const contenedor = document.getElementById('contenedorCatalogo');
-        tbody.innerHTML = '';
+        const tbody = document.getElementById("tablaPdf");
+        const contenedor = document.getElementById("contenedorCatalogo");
+        tbody.innerHTML = "";
 
         if (pdfConsolidado.length === 0) {
-            contenedor.style.display = 'none';
+            contenedor.style.display = "none";
             return;
         }
 
-        contenedor.style.display = 'block';
+        contenedor.style.display = "block";
 
         if (lista.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Sin coincidencias para la búsqueda.</td></tr>';
@@ -974,7 +935,7 @@
 
         lista.slice(0, 40).forEach((item) => {
             const indexOriginal = pdfConsolidado.indexOf(item);
-            const tr = document.createElement('tr');
+            const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><strong>${item.nombre}</strong></td>
                 <td><small>${item.origen.toUpperCase()}</small></td>
@@ -989,20 +950,20 @@
     function cargarInsumoAFormulario(index) {
         const item = pdfConsolidado[index];
         if (!item) return;
+        document.getElementById("ingNombre").value = item.nombre;
+        document.getElementById("ingPrecioPkg").value = item.precio;
+        document.getElementById("ingCantPkg").value = item.cantPkg;
+        document.getElementById("ingUnitPkg").value = item.unitPkg;
 
-        document.getElementById('ingNombre').value = item.nombre;
-        document.getElementById('ingPrecioPkg').value = item.precio;
-        document.getElementById('ingCantPkg').value = item.cantPkg;
-        document.getElementById('ingUnitPkg').value = item.unitPkg;
+        if (item.origen === 'tortas') document.getElementById("ingCategoria").value = "bizcochuelo";
+        else if (item.origen === 'rellenos') document.getElementById("ingCategoria").value = "rellenos";
+        else if (item.origen === 'packing') document.getElementById("ingCategoria").value = "packing";
 
-        if (item.origen === 'tortas') document.getElementById('ingCategoria').value = 'bizcochuelo';
-        else if (item.origen === 'rellenos') document.getElementById('ingCategoria').value = 'rellenos';
-        else if (item.origen === 'packing') document.getElementById('ingCategoria').value = 'packing';
-
-        document.getElementById('seccionInsumo').scrollIntoView({ behavior: 'smooth' });
-        document.getElementById('ingCantUsada').focus();
+        document.getElementById("seccionInsumo").scrollIntoView({ behavior: 'smooth' });
+        document.getElementById("ingCantUsada").focus();
     }
 
+    // --- BÚSQUEDA Y VALIDACIÓN CON ADVERTENCIAS ---
     function buscarDatosEnPdfs(termino) {
         const encontrado = pdfConsolidado.find(p => p.nombre.toLowerCase().includes(termino.toLowerCase()));
         if (encontrado) {
@@ -1018,13 +979,13 @@
     }
 
     function procesarListaInsumosPreset(itemsRequeridos, catDestino) {
-        const noEncontrados = [];
+        let noEncontrados = [];
 
         itemsRequeridos.forEach(req => {
             const res = buscarDatosEnPdfs(req.query);
             let precioPkg = 1000;
             let cantPkg = req.cantPkgDefault || 1000;
-            let unitPkg = req.unitPkgDefault || 'g';
+            let unitPkg = req.unitPkgDefault || "g";
 
             if (res.encontrado) {
                 precioPkg = res.precioPkg;
@@ -1053,16 +1014,18 @@
         });
 
         if (noEncontrados.length > 0) {
-            alert('Falta cargar precios de algún ingrediente no encontrado en la lista, favor de cargarlo manualmente:\n\n• ' + noEncontrados.join('\n• '));
+            alert("Falta cargar precios de algún ingrediente no encontrado en la lista, favor de cargarlo manualmente:\n\n• " + noEncontrados.join("\n• "));
         }
 
         actualizarTabla();
         calcularTotales();
     }
 
+    // --- CARGA DE PREAJUSTES ---
+
     function cargarBizcochueloPreset() {
-        const diam = parseInt(document.getElementById('selectDiametro').value, 10);
-        const sabor = document.getElementById('selectSaborBizcochuelo').value;
+        const diam = parseInt(document.getElementById("selectDiametro").value);
+        const sabor = document.getElementById("selectSaborBizcochuelo").value;
         let huevos = 6;
         let esenciaMl = 8;
 
@@ -1079,51 +1042,51 @@
         let azucarG = huevos * 40;
         let cacaoG = 0;
 
-        if (sabor === 'Chocolate') {
+        if (sabor === "Chocolate") {
             cacaoG = Math.round(harinaG * 0.2);
             harinaG = harinaG - cacaoG;
-        } else if (sabor === 'Mixto') {
+        } else if (sabor === "Mixto") {
             cacaoG = Math.round(harinaG * 0.1);
             harinaG = harinaG - cacaoG;
         }
 
         const lista = [
-            { query: 'harina', nombreMostrar: `Harina 0000 (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: harinaG, unitUsada: 'g' },
-            { query: 'azucar', nombreMostrar: `Azúcar (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: azucarG, unitUsada: 'g' },
-            { query: 'huevo', nombreMostrar: `Huevos (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: huevos, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' }
+            { query: "harina", nombreMostrar: `Harina 0000 (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: harinaG, unitUsada: "g" },
+            { query: "azucar", nombreMostrar: `Azúcar (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: azucarG, unitUsada: "g" },
+            { query: "huevo", nombreMostrar: `Huevos (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: huevos, unitUsada: "u", cantPkgDefault: 12, unitPkgDefault: "u" }
         ];
 
         if (cacaoG > 0) {
-            lista.push({ query: 'cacao', nombreMostrar: `Cacao Amargo (Bizcochuelo ${sabor})`, cantUsada: cacaoG, unitUsada: 'g', cantPkgDefault: 250, unitPkgDefault: 'g' });
+            lista.push({ query: "cacao", nombreMostrar: `Cacao Amargo (Bizcochuelo ${sabor})`, cantUsada: cacaoG, unitUsada: "g", cantPkgDefault: 250, unitPkgDefault: "g" });
         }
-        if (sabor !== 'Chocolate') {
-            lista.push({ query: 'esencia', nombreMostrar: 'Esencia de Vainilla', cantUsada: esenciaMl, unitUsada: 'ml', cantPkgDefault: 100, unitPkgDefault: 'ml' });
+        if (sabor !== "Chocolate") {
+            lista.push({ query: "esencia", nombreMostrar: `Esencia de Vainilla`, cantUsada: esenciaMl, unitUsada: "ml", cantPkgDefault: 100, unitPkgDefault: "ml" });
         }
 
         procesarListaInsumosPreset(lista, 'bizcochuelo');
     }
 
     function cargarMasaQuebradaPreset() {
-        const tipo = document.getElementById('selectMasaQuebrada').value;
-        const sabor = document.getElementById('selectSaborMasaQuebrada').value;
+        const tipo = document.getElementById("selectMasaQuebrada").value;
+        const sabor = document.getElementById("selectSaborMasaQuebrada").value;
         let lista = [];
-        let nombreMasa = '';
+        let nombreMasa = "";
         let harinaG = 250;
         let mantecaG = 150;
         let cacaoG = 0;
 
-        if (tipo === 'sablee') {
-            nombreMasa = 'Masa Sablée';
+        if (tipo === "sablee") {
+            nombreMasa = "Masa Sablée";
             mantecaG = 150;
-        } else if (tipo === 'brisee') {
-            nombreMasa = 'Masa Brisée';
+        } else if (tipo === "brisee") {
+            nombreMasa = "Masa Brisée";
             mantecaG = 125;
         } else {
-            nombreMasa = 'Masa Sucrée';
+            nombreMasa = "Masa Sucrée";
             mantecaG = 100;
         }
 
-        if (sabor === 'Chocolate') {
+        if (sabor === "Chocolate") {
             cacaoG = 30;
             harinaG = harinaG - cacaoG;
         }
@@ -1131,122 +1094,122 @@
         registroArmado.sabor = `${nombreMasa} (${sabor})`;
         registroArmado.bizcochuelo = `${nombreMasa} - ${sabor}`;
 
-        if (tipo === 'sablee') {
+        if (tipo === "sablee") {
             lista = [
-                { query: 'harina', nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: 'g' },
-                { query: 'manteca', nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'impalpable', nombreMostrar: 'Azúcar Impalpable', cantUsada: 100, unitUsada: 'g' },
-                { query: 'huevo', nombreMostrar: 'Huevos', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' }
+                { query: "harina", nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: "g" },
+                { query: "manteca", nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "impalpable", nombreMostrar: "Azúcar Impalpable", cantUsada: 100, unitUsada: "g" },
+                { query: "huevo", nombreMostrar: "Huevos", cantUsada: 1, unitUsada: "u", cantPkgDefault: 12, unitPkgDefault: "u" }
             ];
-        } else if (tipo === 'brisee') {
+        } else if (tipo === "brisee") {
             lista = [
-                { query: 'harina', nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: 'g' },
-                { query: 'manteca', nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'huevo', nombreMostrar: 'Huevos', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' }
+                { query: "harina", nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: "g" },
+                { query: "manteca", nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "huevo", nombreMostrar: "Huevos", cantUsada: 1, unitUsada: "u", cantPkgDefault: 12, unitPkgDefault: "u" }
             ];
         } else {
             lista = [
-                { query: 'harina', nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: 'g' },
-                { query: 'manteca', nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 100, unitUsada: 'g' }
+                { query: "harina", nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: "g" },
+                { query: "manteca", nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "azucar", nombreMostrar: "Azúcar", cantUsada: 100, unitUsada: "g" }
             ];
         }
 
         if (cacaoG > 0) {
-            lista.push({ query: 'cacao', nombreMostrar: `Cacao Amargo (${nombreMasa})`, cantUsada: cacaoG, unitUsada: 'g', cantPkgDefault: 250, unitPkgDefault: 'g' });
+            lista.push({ query: "cacao", nombreMostrar: `Cacao Amargo (${nombreMasa})`, cantUsada: cacaoG, unitUsada: "g", cantPkgDefault: 250, unitPkgDefault: "g" });
         }
 
         procesarListaInsumosPreset(lista, 'bizcochuelo');
     }
 
     function cargarRellenoPreset() {
-        const rel = document.getElementById('selectRelleno').value;
+        const rel = document.getElementById("selectRelleno").value;
         let lista = [];
 
-        if (rel === 'crema_toppings') {
-            registroArmado.rellenos.push('Crema Chantilly con Adornos / Foto Comestible');
+        if (rel === "crema_toppings") {
+            registroArmado.rellenos.push("Crema Chantilly con Adornos / Foto Comestible");
             lista = [
-                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 300, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
-                { query: 'impalpable', nombreMostrar: 'Azúcar Impalpable', cantUsada: 40, unitUsada: 'g' },
-                { query: 'foto', nombreMostrar: 'Foto Comestible / Adornos de Mazapán', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' }
+                { query: "crema", nombreMostrar: "Crema de Leche", cantUsada: 300, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" },
+                { query: "impalpable", nombreMostrar: "Azúcar Impalpable", cantUsada: 40, unitUsada: "g" },
+                { query: "foto", nombreMostrar: "Foto Comestible / Adornos de Mazapán", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" }
             ];
-        } else if (rel === 'ganache_negro') {
-            registroArmado.rellenos.push('Ganache de Chocolate Negro');
+        } else if (rel === "ganache_negro") {
+            registroArmado.rellenos.push("Ganache de Chocolate Negro");
             lista = [
-                { query: 'chocolate', nombreMostrar: 'Chocolate Semi-amargo', cantUsada: 200, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 200, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+                { query: "chocolate", nombreMostrar: "Chocolate Semi-amargo", cantUsada: 200, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche", cantUsada: 200, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" }
             ];
-        } else if (rel === 'ganache_blanco') {
-            registroArmado.rellenos.push('Ganache de Chocolate Blanco');
+        } else if (rel === "ganache_blanco") {
+            registroArmado.rellenos.push("Ganache de Chocolate Blanco");
             lista = [
-                { query: 'chocolate blanco', nombreMostrar: 'Chocolate Blanco', cantUsada: 200, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 150, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+                { query: "chocolate blanco", nombreMostrar: "Chocolate Blanco", cantUsada: 200, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche", cantUsada: 150, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" }
             ];
-        } else if (rel === 'mousse') {
-            const saborMousse = document.getElementById('selectSaborMousseRelleno').value;
+        } else if (rel === "mousse") {
+            const saborMousse = document.getElementById("selectSaborMousseRelleno").value;
             registroArmado.rellenos.push(`Mousse de ${saborMousse}`);
 
-            let ingredienteSabor = { query: 'chocolate', nombreMostrar: 'Chocolate Semi-amargo (Mousse)', cantUsada: 150, unitUsada: 'g' };
+            let ingredienteSabor = { query: "chocolate", nombreMostrar: `Chocolate Semi-amargo (Mousse)`, cantUsada: 150, unitUsada: "g" };
 
-            if (saborMousse === 'Chocolate Blanco') {
-                ingredienteSabor = { query: 'chocolate blanco', nombreMostrar: 'Chocolate Blanco (Mousse)', cantUsada: 150, unitUsada: 'g' };
-            } else if (saborMousse === 'Dulce de Leche') {
-                ingredienteSabor = { query: 'dulce', nombreMostrar: 'Dulce de Leche Repostero (Mousse)', cantUsada: 200, unitUsada: 'g' };
-            } else if (['Frutilla', 'Frutos Rojos', 'Maracuyá', 'Limón'].includes(saborMousse)) {
-                ingredienteSabor = { query: 'fruta', nombreMostrar: `Pulpa / Fruta de ${saborMousse} (Mousse)`, cantUsada: 150, unitUsada: 'g' };
-            } else if (saborMousse === 'Café / Moka') {
-                ingredienteSabor = { query: 'cafe', nombreMostrar: 'Café / Saborizante Moka (Mousse)', cantUsada: 20, unitUsada: 'g' };
+            if (saborMousse === "Chocolate Blanco") {
+                ingredienteSabor = { query: "chocolate blanco", nombreMostrar: "Chocolate Blanco (Mousse)", cantUsada: 150, unitUsada: "g" };
+            } else if (saborMousse === "Dulce de Leche") {
+                ingredienteSabor = { query: "dulce", nombreMostrar: "Dulce de Leche Repostero (Mousse)", cantUsada: 200, unitUsada: "g" };
+            } else if (saborMousse === "Frutilla" || saborMousse === "Frutos Rojos" || saborMousse === "Maracuyá" || saborMousse === "Limón") {
+                ingredienteSabor = { query: "fruta", nombreMostrar: `Pulpa / Fruta de ${saborMousse} (Mousse)`, cantUsada: 150, unitUsada: "g" };
+            } else if (saborMousse === "Café / Moka") {
+                ingredienteSabor = { query: "cafe", nombreMostrar: "Café / Saborizante Moka (Mousse)", cantUsada: 20, unitUsada: "g" };
             }
 
             lista = [
-                { query: 'crema', nombreMostrar: `Crema de Leche (Mousse de ${saborMousse})`, cantUsada: 250, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
-                { query: 'gelatina', nombreMostrar: 'Gelatina sin Sabor (Mousse)', cantUsada: 7, unitUsada: 'g', cantPkgDefault: 20, unitPkgDefault: 'g' },
+                { query: "crema", nombreMostrar: `Crema de Leche (Mousse de ${saborMousse})`, cantUsada: 250, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" },
+                { query: "gelatina", nombreMostrar: "Gelatina sin Sabor (Mousse)", cantUsada: 7, unitUsada: "g", cantPkgDefault: 20, unitPkgDefault: "g" },
                 ingredienteSabor
             ];
-        } else if (rel === 'buttercream') {
-            registroArmado.rellenos.push('Buttercream Tradicional');
+        } else if (rel === "buttercream") {
+            registroArmado.rellenos.push("Buttercream Tradicional");
             lista = [
-                { query: 'huevo', nombreMostrar: 'Huevos (Claras)', cantUsada: 3, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' },
-                { query: 'manteca', nombreMostrar: 'Manteca', cantUsada: 250, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 200, unitUsada: 'g' }
+                { query: "huevo", nombreMostrar: "Huevos (Claras)", cantUsada: 3, unitUsada: "u", cantPkgDefault: 12, unitPkgDefault: "u" },
+                { query: "manteca", nombreMostrar: "Manteca", cantUsada: 250, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "azucar", nombreMostrar: "Azúcar", cantUsada: 200, unitUsada: "g" }
             ];
-        } else if (rel === 'butternache') {
-            registroArmado.rellenos.push('Butternache Especial');
+        } else if (rel === "butternache") {
+            registroArmado.rellenos.push("Butternache Especial");
             lista = [
-                { query: 'manteca', nombreMostrar: 'Manteca', cantUsada: 200, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'chocolate', nombreMostrar: 'Chocolate', cantUsada: 200, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 100, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+                { query: "manteca", nombreMostrar: "Manteca", cantUsada: 200, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "chocolate", nombreMostrar: "Chocolate", cantUsada: 200, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche", cantUsada: 100, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" }
             ];
-        } else if (rel === 'mermelada') {
-            registroArmado.rellenos.push('Mermelada de Frutas');
+        } else if (rel === "mermelada") {
+            registroArmado.rellenos.push("Mermelada de Frutas");
             lista = [
-                { query: 'fruta', nombreMostrar: 'Frutas a elección / Pulpa', cantUsada: 300, unitUsada: 'g' },
-                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 200, unitUsada: 'g' }
+                { query: "fruta", nombreMostrar: "Frutas a elección / Pulpa", cantUsada: 300, unitUsada: "g" },
+                { query: "azucar", nombreMostrar: "Azúcar", cantUsada: 200, unitUsada: "g" }
             ];
-        } else if (rel === 'membrillo') {
-            registroArmado.rellenos.push('Dulce de Membrillo');
-            lista = [{ query: 'membrillo', nombreMostrar: 'Dulce de Membrillo', cantUsada: 400, unitUsada: 'g' }];
-        } else if (rel === 'batata') {
-            registroArmado.rellenos.push('Dulce de Batata');
-            lista = [{ query: 'batata', nombreMostrar: 'Dulce de Batata', cantUsada: 400, unitUsada: 'g' }];
-        } else if (rel === 'ricota') {
-            registroArmado.rellenos.push('Relleno de Ricota y Limón');
+        } else if (rel === "membrillo") {
+            registroArmado.rellenos.push("Dulce de Membrillo");
+            lista = [{ query: "membrillo", nombreMostrar: "Dulce de Membrillo", cantUsada: 400, unitUsada: "g" }];
+        } else if (rel === "batata") {
+            registroArmado.rellenos.push("Dulce de Batata");
+            lista = [{ query: "batata", nombreMostrar: "Dulce de Batata", cantUsada: 400, unitUsada: "g" }];
+        } else if (rel === "ricota") {
+            registroArmado.rellenos.push("Relleno de Ricota y Limón");
             lista = [
-                { query: 'ricota', nombreMostrar: 'Ricota', cantUsada: 400, unitUsada: 'g' },
-                { query: 'huevo', nombreMostrar: 'Huevos', cantUsada: 2, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' },
-                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 100, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 100, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
-                { query: 'limon', nombreMostrar: 'Limón (Ralladura/Jugo)', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
-                { query: 'esencia', nombreMostrar: 'Esencia de Vainilla', cantUsada: 5, unitUsada: 'ml', cantPkgDefault: 100, unitPkgDefault: 'ml' }
+                { query: "ricota", nombreMostrar: "Ricota", cantUsada: 400, unitUsada: "g" },
+                { query: "huevo", nombreMostrar: "Huevos", cantUsada: 2, unitUsada: "u", cantPkgDefault: 12, unitPkgDefault: "u" },
+                { query: "azucar", nombreMostrar: "Azúcar", cantUsada: 100, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche", cantUsada: 100, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" },
+                { query: "limon", nombreMostrar: "Limón (Ralladura/Jugo)", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" },
+                { query: "esencia", nombreMostrar: "Esencia de Vainilla", cantUsada: 5, unitUsada: "ml", cantPkgDefault: 100, unitPkgDefault: "ml" }
             ];
-        } else if (rel === 'ddl_toppings') {
-            registroArmado.rellenos.push('Dulce de leche + Toppings (Chips, Bon o bon, Merenguitos, Mantecol)');
+        } else if (rel === "ddl_toppings") {
+            registroArmado.rellenos.push("Dulce de leche + Toppings (Chips, Bon o bon, Merenguitos, Mantecol)");
             lista = [
-                { query: 'dulce', nombreMostrar: 'Dulce de Leche Repostero', cantUsada: 400, unitUsada: 'g' },
-                { query: 'chips', nombreMostrar: 'Chips de Chocolate', cantUsada: 50, unitUsada: 'g' },
-                { query: 'bon', nombreMostrar: 'Bon o Bon', cantUsada: 2, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
-                { query: 'merengue', nombreMostrar: 'Merenguitos', cantUsada: 50, unitUsada: 'g' },
-                { query: 'mantecol', nombreMostrar: 'Mantecol', cantUsada: 50, unitUsada: 'g' }
+                { query: "dulce", nombreMostrar: "Dulce de Leche Repostero", cantUsada: 400, unitUsada: "g" },
+                { query: "chips", nombreMostrar: "Chips de Chocolate", cantUsada: 50, unitUsada: "g" },
+                { query: "bon", nombreMostrar: "Bon o Bon", cantUsada: 2, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" },
+                { query: "merengue", nombreMostrar: "Merenguitos", cantUsada: 50, unitUsada: "g" },
+                { query: "mantecol", nombreMostrar: "Mantecol", cantUsada: 50, unitUsada: "g" }
             ];
         }
 
@@ -1254,65 +1217,65 @@
     }
 
     function cargarTopglassRellenoPreset() {
-        const saborTopglass = document.getElementById('selectTopglassRelleno').value;
+        const saborTopglass = document.getElementById("selectTopglassRelleno").value;
         registroArmado.rellenos.push(`Pasta Saborizante Topglass (${saborTopglass})`);
 
         const lista = [
-            { query: saborTopglass.toLowerCase(), nombreMostrar: `Pasta Saborizante ${saborTopglass} Topglass`, cantUsada: 50, unitUsada: 'g', cantPkgDefault: 250, unitPkgDefault: 'g' }
+            { query: saborTopglass.toLowerCase(), nombreMostrar: `Pasta Saborizante ${saborTopglass} Topglass`, cantUsada: 50, unitUsada: "g", cantPkgDefault: 250, unitPkgDefault: "g" }
         ];
 
         procesarListaInsumosPreset(lista, 'rellenos');
     }
 
     function cargarCoberturaPreset() {
-        const cob = document.getElementById('selectCobertura').value;
-        const sabExtra = document.getElementById('selectCoberturaTopglass').value;
+        const cob = document.getElementById("selectCobertura").value;
+        const sabExtra = document.getElementById("selectCoberturaTopglass").value;
         let lista = [];
-        let nombreCobertura = '';
+        let nombreCobertura = "";
 
-        if (cob === 'ganache_negro') {
-            nombreCobertura = 'Ganache de Chocolate Negro';
+        if (cob === "ganache_negro") {
+            nombreCobertura = "Ganache de Chocolate Negro";
             lista = [
-                { query: 'chocolate', nombreMostrar: 'Chocolate Semi-amargo (Cobertura)', cantUsada: 250, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 250, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+                { query: "chocolate", nombreMostrar: "Chocolate Semi-amargo (Cobertura)", cantUsada: 250, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche (Cobertura)", cantUsada: 250, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" }
             ];
-        } else if (cob === 'ganache_blanco') {
-            nombreCobertura = 'Ganache de Chocolate Blanco';
+        } else if (cob === "ganache_blanco") {
+            nombreCobertura = "Ganache de Chocolate Blanco";
             lista = [
-                { query: 'chocolate blanco', nombreMostrar: 'Chocolate Blanco (Cobertura)', cantUsada: 250, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 180, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+                { query: "chocolate blanco", nombreMostrar: "Chocolate Blanco (Cobertura)", cantUsada: 250, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche (Cobertura)", cantUsada: 180, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" }
             ];
-        } else if (cob === 'buttercream') {
-            nombreCobertura = 'Buttercream';
+        } else if (cob === "buttercream") {
+            nombreCobertura = "Buttercream";
             lista = [
-                { query: 'huevo', nombreMostrar: 'Huevos (Claras) (Cobertura)', cantUsada: 3, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' },
-                { query: 'manteca', nombreMostrar: 'Manteca (Cobertura)', cantUsada: 250, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'azucar', nombreMostrar: 'Azúcar (Cobertura)', cantUsada: 200, unitUsada: 'g' }
+                { query: "huevo", nombreMostrar: "Huevos (Claras) (Cobertura)", cantUsada: 3, unitUsada: "u", cantPkgDefault: 12, unitPkgDefault: "u" },
+                { query: "manteca", nombreMostrar: "Manteca (Cobertura)", cantUsada: 250, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "azucar", nombreMostrar: "Azúcar (Cobertura)", cantUsada: 200, unitUsada: "g" }
             ];
-        } else if (cob === 'crema') {
-            nombreCobertura = 'Crema Chantilly';
+        } else if (cob === "crema") {
+            nombreCobertura = "Crema Chantilly";
             lista = [
-                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 300, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
-                { query: 'impalpable', nombreMostrar: 'Azúcar Impalpable (Cobertura)', cantUsada: 40, unitUsada: 'g' }
+                { query: "crema", nombreMostrar: "Crema de Leche (Cobertura)", cantUsada: 300, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" },
+                { query: "impalpable", nombreMostrar: "Azúcar Impalpable (Cobertura)", cantUsada: 40, unitUsada: "g" }
             ];
-        } else if (cob === 'butternache') {
-            nombreCobertura = 'Butternache';
+        } else if (cob === "butternache") {
+            nombreCobertura = "Butternache";
             lista = [
-                { query: 'manteca', nombreMostrar: 'Manteca (Cobertura)', cantUsada: 200, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
-                { query: 'chocolate', nombreMostrar: 'Chocolate (Cobertura)', cantUsada: 200, unitUsada: 'g' },
-                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 100, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+                { query: "manteca", nombreMostrar: "Manteca (Cobertura)", cantUsada: 200, unitUsada: "g", cantPkgDefault: 200, unitPkgDefault: "g" },
+                { query: "chocolate", nombreMostrar: "Chocolate (Cobertura)", cantUsada: 200, unitUsada: "g" },
+                { query: "crema", nombreMostrar: "Crema de Leche (Cobertura)", cantUsada: 100, unitUsada: "ml", cantPkgDefault: 500, unitPkgDefault: "ml" }
             ];
         }
 
-        if (sabExtra !== 'ninguno') {
+        if (sabExtra !== "ninguno") {
             nombreCobertura += ` (Saborizado con Topglass ${sabExtra})`;
             lista.push({
                 query: sabExtra.toLowerCase(),
                 nombreMostrar: `Pasta Saborizante ${sabExtra} Topglass (Cobertura)`,
                 cantUsada: 40,
-                unitUsada: 'g',
+                unitUsada: "g",
                 cantPkgDefault: 250,
-                unitPkgDefault: 'g'
+                unitPkgDefault: "g"
             });
         }
 
@@ -1321,41 +1284,42 @@
     }
 
     function cargarPackingPreset() {
-        const packType = document.getElementById('selectPacking').value;
+        const packType = document.getElementById("selectPacking").value;
         let lista = [];
 
-        if (packType === 'caja_disco') {
+        if (packType === "caja_disco") {
             lista = [
-                { query: 'caja', nombreMostrar: 'Caja para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
-                { query: 'disco', nombreMostrar: 'Disco / Base para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' }
+                { query: "caja", nombreMostrar: "Caja para Torta", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" },
+                { query: "disco", nombreMostrar: "Disco / Base para Torta", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" }
             ];
         } else {
             lista = [
-                { query: 'caja', nombreMostrar: 'Caja para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
-                { query: 'disco', nombreMostrar: 'Disco / Base para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
-                { query: 'cinta', nombreMostrar: 'Cinta / Moño Decorativo', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' }
+                { query: "caja", nombreMostrar: "Caja para Torta", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" },
+                { query: "disco", nombreMostrar: "Disco / Base para Torta", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" },
+                { query: "cinta", nombreMostrar: "Cinta / Moño Decorativo", cantUsada: 1, unitUsada: "u", cantPkgDefault: 1, unitPkgDefault: "u" }
             ];
         }
 
         procesarListaInsumosPreset(lista, 'packing');
     }
 
+    // --- MANEJO DE TABLAS Y EDICIÓN ---
     function convertirABase(cantidad, unidad) {
-        if (unidad === 'kg' || unidad === 'l') return cantidad * 1000;
+        if (unidad === "kg" || unidad === "l") return cantidad * 1000;
         return cantidad;
     }
 
     function agregarOActualizarIngrediente() {
-        const nombre = document.getElementById('ingNombre').value.trim();
-        const categoria = document.getElementById('ingCategoria').value;
-        const precioPkg = parseFloat(document.getElementById('ingPrecioPkg').value);
-        const cantPkg = parseFloat(document.getElementById('ingCantPkg').value);
-        const unitPkg = document.getElementById('ingUnitPkg').value;
-        const cantUsada = parseFloat(document.getElementById('ingCantUsada').value);
-        const unitUsada = document.getElementById('ingUnitUsada').value;
+        const nombre = document.getElementById("ingNombre").value.trim();
+        const categoria = document.getElementById("ingCategoria").value;
+        const precioPkg = parseFloat(document.getElementById("ingPrecioPkg").value);
+        const cantPkg = parseFloat(document.getElementById("ingCantPkg").value);
+        const unitPkg = document.getElementById("ingUnitPkg").value;
+        const cantUsada = parseFloat(document.getElementById("ingCantUsada").value);
+        const unitUsada = document.getElementById("ingUnitUsada").value;
 
         if (!nombre || isNaN(precioPkg) || isNaN(cantPkg) || isNaN(cantUsada)) {
-            alert('Por favor complete todos los campos numéricos del ingrediente.');
+            alert("Por favor complete todos los campos numéricos del ingrediente.");
             return;
         }
 
@@ -1392,37 +1356,37 @@
         const ing = ingredientes[index];
         indiceEdicion = index;
 
-        document.getElementById('ingNombre').value = ing.nombre;
-        document.getElementById('ingCategoria').value = ing.categoria || 'bizcochuelo';
-        document.getElementById('ingPrecioPkg').value = ing.precioPkg;
-        document.getElementById('ingCantPkg').value = ing.cantPkg;
-        document.getElementById('ingUnitPkg').value = ing.unitPkg;
-        document.getElementById('ingCantUsada').value = ing.cantUsada;
-        document.getElementById('ingUnitUsada').value = ing.unitUsada;
+        document.getElementById("ingNombre").value = ing.nombre;
+        document.getElementById("ingCategoria").value = ing.categoria || "bizcochuelo";
+        document.getElementById("ingPrecioPkg").value = ing.precioPkg;
+        document.getElementById("ingCantPkg").value = ing.cantPkg;
+        document.getElementById("ingUnitPkg").value = ing.unitPkg;
+        document.getElementById("ingCantUsada").value = ing.cantUsada;
+        document.getElementById("ingUnitUsada").value = ing.unitUsada;
 
-        const btn = document.getElementById('btnAgregarIng');
-        btn.innerText = '💾 Guardar Cambios en Insumo';
-        btn.style.backgroundColor = 'var(--success)';
+        const btn = document.getElementById("btnAgregarIng");
+        btn.innerText = "💾 Guardar Cambios en Insumo";
+        btn.style.backgroundColor = "var(--success)";
 
-        document.getElementById('tituloInsumoForm').innerText = '✏️ Editando Insumo de la Receta';
-        document.getElementById('seccionInsumo').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById("tituloInsumoForm").innerText = "✏️ Editando Insumo de la Receta";
+        document.getElementById("seccionInsumo").scrollIntoView({ behavior: 'smooth' });
     }
 
     function cancelarEdicion() {
         indiceEdicion = -1;
         limpiarFormularioInsumo();
-        const btn = document.getElementById('btnAgregarIng');
-        btn.innerText = '+ Agregar / Guardar Insumo en Receta';
-        btn.style.backgroundColor = 'var(--primary)';
-        document.getElementById('tituloInsumoForm').innerText = '4. Agregar / Editar Insumo Manual o desde PDF';
+        const btn = document.getElementById("btnAgregarIng");
+        btn.innerText = "+ Agregar / Guardar Insumo en Receta";
+        btn.style.backgroundColor = "var(--primary)";
+        document.getElementById("tituloInsumoForm").innerText = "4. Agregar / Editar Insumo Manual o desde PDF";
     }
 
     function limpiarFormularioInsumo() {
-        document.getElementById('ingNombre').value = '';
-        document.getElementById('ingPrecioPkg').value = '';
-        document.getElementById('ingCantPkg').value = '';
-        document.getElementById('ingCantUsada').value = '';
-        document.getElementById('selectInsumoPdf').value = '';
+        document.getElementById("ingNombre").value = "";
+        document.getElementById("ingPrecioPkg").value = "";
+        document.getElementById("ingCantPkg").value = "";
+        document.getElementById("ingCantUsada").value = "";
+        document.getElementById("selectInsumoPdf").value = "";
     }
 
     function eliminarIngrediente(index) {
@@ -1433,13 +1397,13 @@
     }
 
     function actualizarTabla() {
-        const tbodyBizcochuelo = document.getElementById('tablaBizcochuelo');
-        const tbodyRellenos = document.getElementById('tablaRellenos');
-        const tbodyPacking = document.getElementById('tablaPacking');
+        const tbodyBizcochuelo = document.getElementById("tablaBizcochuelo");
+        const tbodyRellenos = document.getElementById("tablaRellenos");
+        const tbodyPacking = document.getElementById("tablaPacking");
 
-        tbodyBizcochuelo.innerHTML = '';
-        tbodyRellenos.innerHTML = '';
-        tbodyPacking.innerHTML = '';
+        tbodyBizcochuelo.innerHTML = "";
+        tbodyRellenos.innerHTML = "";
+        tbodyPacking.innerHTML = "";
 
         let countBizcochuelo = 0;
         let countRellenos = 0;
@@ -1450,7 +1414,7 @@
         let subtotalPac = 0;
 
         ingredientes.forEach((ing, index) => {
-            const tr = document.createElement('tr');
+            const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><strong>${ing.nombre}</strong></td>
                 <td>${ing.fmtUso}</td>
@@ -1477,231 +1441,119 @@
             }
         });
 
-        document.getElementById('subtotalBizcochuelo').innerText = `$${subtotalBiz.toFixed(2)}`;
-        document.getElementById('subtotalRellenos').innerText = `$${subtotalRel.toFixed(2)}`;
-        document.getElementById('subtotalPacking').innerText = `$${subtotalPac.toFixed(2)}`;
+        document.getElementById("subtotalBizcochuelo").innerText = `$${subtotalBiz.toFixed(2)}`;
+        document.getElementById("subtotalRellenos").innerText = `$${subtotalRel.toFixed(2)}`;
+        document.getElementById("subtotalPacking").innerText = `$${subtotalPac.toFixed(2)}`;
 
         if (countBizcochuelo === 0) tbodyBizcochuelo.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>';
         if (countRellenos === 0) tbodyRellenos.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>';
         if (countPacking === 0) tbodyPacking.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>';
 
-        const alertWarn = document.getElementById('alertWarningFalta');
-        const faltantes = [];
+        const alertWarn = document.getElementById("alertWarningFalta");
+        let faltantes = [];
 
-        if (countBizcochuelo === 0) faltantes.push('Bizcochuelo / Masas');
-        if (countRellenos === 0) faltantes.push('Rellenos');
-        if (countPacking === 0) faltantes.push('Packing');
+        if (countBizcochuelo === 0) faltantes.push("Bizcochuelo / Masas");
+        if (countRellenos === 0) faltantes.push("Rellenos");
+        if (countPacking === 0) faltantes.push("Packing");
 
         if (faltantes.length > 0) {
-            alertWarn.style.display = 'block';
-            alertWarn.innerText = `⚠️ Falta cargar algún item en los costos directos (${faltantes.join(', ')})`;
+            alertWarn.style.display = "block";
+            alertWarn.innerText = `⚠️ Falta cargar algún item en los costos directos (${faltantes.join(", ")})`;
         } else {
-            alertWarn.style.display = 'none';
+            alertWarn.style.display = "none";
         }
     }
 
     function calcularTotales() {
-        const rendimiento = Math.max(1, parseFloat(document.getElementById('rendimiento').value) || 1);
-        const horasMdo = parseFloat(document.getElementById('horasMdo').value) || 0;
-        const tarifaMdo = parseFloat(document.getElementById('tarifaMdo').value) || 0;
-        const cifPct = parseFloat(document.getElementById('cifPct').value) || 0;
-        const margenPct = parseFloat(document.getElementById('margenPct').value) || 0;
-        const margenBizPct = parseFloat(document.getElementById('margenBizPct').value) || 0;
-        const margenRellenosPct = parseFloat(document.getElementById('margenRellenosPct').value) || 0;
-        const margenPackingPct = parseFloat(document.getElementById('margenPackingPct').value) || 0;
+        const rendimiento = Math.max(1, parseFloat(document.getElementById("rendimiento").value) || 1);
+        const horasMdo = parseFloat(document.getElementById("horasMdo").value) || 0;
+        const tarifaMdo = parseFloat(document.getElementById("tarifaMdo").value) || 0;
+        const cifPct = parseFloat(document.getElementById("cifPct").value) || 0;
+        const margenPct = parseFloat(document.getElementById("margenPct").value) || 0;
 
         const totalMateriaPrima = ingredientes.reduce((sum, item) => sum + item.costo, 0);
         const totalMdo = horasMdo * tarifaMdo;
         const subtotalDirecto = totalMateriaPrima + totalMdo;
         const totalCif = subtotalDirecto * (cifPct / 100);
+
         const costoTotal = subtotalDirecto + totalCif;
         const costoUnitario = costoTotal / rendimiento;
-
-        const subtotalBiz = ingredientes.filter(i => (i.categoria || 'bizcochuelo') === 'bizcochuelo').reduce((sum, item) => sum + item.costo, 0);
-        const subtotalRellenos = ingredientes.filter(i => i.categoria === 'rellenos').reduce((sum, item) => sum + item.costo, 0);
-        const subtotalPacking = ingredientes.filter(i => i.categoria === 'packing').reduce((sum, item) => sum + item.costo, 0);
-
-        const precioBiz = subtotalBiz * (1 + (margenBizPct / 100));
-        const precioRellenos = subtotalRellenos * (1 + (margenRellenosPct / 100));
-        const precioPacking = subtotalPacking * (1 + (margenPackingPct / 100));
         const precioTotal = costoTotal * (1 + (margenPct / 100));
 
-        document.getElementById('resMateriaPrima').innerText = `$${totalMateriaPrima.toFixed(2)}`;
-        document.getElementById('resMdo').innerText = `$${totalMdo.toFixed(2)}`;
-        document.getElementById('resCif').innerText = `$${totalCif.toFixed(2)}`;
-        document.getElementById('resCostoTotal').innerText = `$${costoTotal.toFixed(2)}`;
-        document.getElementById('resCostoUnitario').innerText = `$${costoUnitario.toFixed(2)}`;
-        document.getElementById('resPrecioBiz').innerText = `$${precioBiz.toFixed(2)}`;
-        document.getElementById('resPrecioRellenos').innerText = `$${precioRellenos.toFixed(2)}`;
-        document.getElementById('resPrecioPacking').innerText = `$${precioPacking.toFixed(2)}`;
-        document.getElementById('resPrecioTotal').innerText = `$${precioTotal.toFixed(2)}`;
+        document.getElementById("resMateriaPrima").innerText = `$${totalMateriaPrima.toFixed(2)}`;
+        document.getElementById("resMdo").innerText = `$${totalMdo.toFixed(2)}`;
+        document.getElementById("resCif").innerText = `$${totalCif.toFixed(2)}`;
+
+        document.getElementById("resCostoTotal").innerText = `$${costoTotal.toFixed(2)}`;
+        document.getElementById("resCostoUnitario").innerText = `$${costoUnitario.toFixed(2)}`;
+        document.getElementById("resPrecioTotal").innerText = `$${precioTotal.toFixed(2)}`;
     }
 
     function limpiarTodo() {
-        if (confirm('¿Desea limpiar todos los datos del presupuesto actual?')) {
+        if (confirm("¿Desea limpiar todos los datos del presupuesto actual?")) {
             ingredientes = [];
-            registroArmado = { bizcochuelo: '', diametroTexto: '', sabor: '', rellenos: [], cobertura: '' };
+            registroArmado = { bizcochuelo: "", diametroTexto: "", sabor: "", rellenos: [], cobertura: "" };
             cancelarEdicion();
             actualizarTabla();
             calcularTotales();
         }
     }
 
-    function guardarPresupuestoLocal() {
-        const payload = {
-            nombreReceta: document.getElementById('nombreReceta').value,
-            rendimiento: document.getElementById('rendimiento').value,
-            horasMdo: document.getElementById('horasMdo').value,
-            tarifaMdo: document.getElementById('tarifaMdo').value,
-            cifPct: document.getElementById('cifPct').value,
-            margenPct: document.getElementById('margenPct').value,
-            margenBizPct: document.getElementById('margenBizPct').value,
-            margenRellenosPct: document.getElementById('margenRellenosPct').value,
-            margenPackingPct: document.getElementById('margenPackingPct').value,
-            ingredientes: ingredientes,
-            pdfConsolidado: pdfConsolidado,
-            registroArmado: registroArmado,
-            timestamp: new Date().toISOString()
-        };
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-        alert('Presupuesto guardado en el navegador.');
-    }
-
-    function cargarPresupuestoLocal() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) {
-            alert('No hay un presupuesto guardado en este navegador.');
-            return;
-        }
-
-        try {
-            const payload = JSON.parse(saved);
-            document.getElementById('nombreReceta').value = payload.nombreReceta || 'Torta Personalizada Especial';
-            document.getElementById('rendimiento').value = payload.rendimiento || 12;
-            document.getElementById('horasMdo').value = payload.horasMdo || 2.5;
-            document.getElementById('tarifaMdo').value = payload.tarifaMdo || 1500;
-            document.getElementById('cifPct').value = payload.cifPct || 15;
-            document.getElementById('margenPct').value = payload.margenPct || 40;
-            document.getElementById('margenBizPct').value = payload.margenBizPct || 40;
-            document.getElementById('margenRellenosPct').value = payload.margenRellenosPct || 35;
-            document.getElementById('margenPackingPct').value = payload.margenPackingPct || 30;
-
-            ingredientes = Array.isArray(payload.ingredientes) ? payload.ingredientes : [];
-            pdfConsolidado = Array.isArray(payload.pdfConsolidado) ? payload.pdfConsolidado : [];
-            registroArmado = payload.registroArmado || { bizcochuelo: '', diametroTexto: '', sabor: '', rellenos: [], cobertura: '' };
-
-            actualizarTabla();
-            calcularTotales();
-            alert('Presupuesto recuperado correctamente.');
-        } catch (error) {
-            console.error(error);
-            alert('El presupuesto guardado está corrupto o no se pudo recuperar.');
-        }
-    }
-
-    function borrarPresupuestoLocal() {
-        if (confirm('¿Desea borrar el presupuesto guardado en el navegador?')) {
-            localStorage.removeItem(STORAGE_KEY);
-            alert('Se borró el presupuesto guardado.');
-        }
-    }
-
+    // --- EXPORTACIÓN PARA EL CLIENTE ---
     function exportarReporteCliente() {
         if (ingredientes.length === 0) {
-            alert('Agregue al menos un insumo o preparación para exportar el presupuesto.');
+            alert("Agregue al menos un insumo o preparación para exportar el presupuesto.");
             return;
         }
 
-        const nombreReceta = document.getElementById('nombreReceta').value.trim() || 'Torta Especial';
-        const modo = document.getElementById('modoReporte').value;
-        const precioTotal = document.getElementById('resPrecioTotal').innerText;
+        const nombreReceta = document.getElementById("nombreReceta").value.trim() || "Torta Especial";
+        const diametroVal = document.getElementById("selectDiametro").value;
+        const precioTotal = document.getElementById("resPrecioTotal").innerText;
 
-        let texto = modo === 'cliente'
-            ? 'Espero que te encuentres bien, gracias por elegirnos. A continuación te envío el presupuesto solicitado:\n\n'
-            : 'PRESUPUESTO INTERNO - COSTEO DE PRODUCCIÓN\n\n';
+        let texto = `Espero que te encuentres bien, gracias por elegirnos. A continuación te envío el presupuesto solicitado:\n\n`;
+        texto += `🎂 Usted pidió una torta: ${nombreReceta}\n`;
 
-        texto += `🎂 Producto: ${nombreReceta}\n`;
-
-        if (registroArmado.diametroTexto) texto += `📐 Diámetro: ${registroArmado.diametroTexto}\n`;
-        if (registroArmado.sabor) texto += `🥮 Base: ${registroArmado.sabor}\n`;
-        if (registroArmado.rellenos.length > 0) {
-            texto += '🍰 Rellenos: ' + registroArmado.rellenos.join(', ') + '\n';
-        }
-        if (registroArmado.cobertura) texto += `🎨 Cobertura: ${registroArmado.cobertura}\n`;
-
-        if (modo === 'interno') {
-            texto += `\nMateria prima total: ${document.getElementById('resMateriaPrima').innerText}\n`;
-            texto += `M.O.D.: ${document.getElementById('resMdo').innerText}\n`;
-            texto += `CIF: ${document.getElementById('resCif').innerText}\n`;
-            texto += `Costo total lote: ${document.getElementById('resCostoTotal').innerText}\n`;
-            texto += `Costo unitario: ${document.getElementById('resCostoUnitario').innerText}\n`;
-            texto += `Margen general: ${document.getElementById('margenPct').value}%\n`;
-        }
-
-        texto += `\n💰 VALOR TOTAL DEL PRESUPUESTO: ${precioTotal}\n\n`;
-
-        if (modo === 'cliente') {
-            texto += 'Quedo a tu entera disposición por cualquier duda o para confirmar tu pedido. ¡Muchas gracias!';
+        if (registroArmado.diametroTexto) {
+            texto += `📐 Diámetro: ${registroArmado.diametroTexto}\n`;
         } else {
-            texto += '--- COSTEO INTERNO ---\n';
-            ingredientes.forEach((item, index) => {
-                texto += `${index + 1}. ${item.nombre} | ${item.fmtUso} | $${item.costo.toFixed(2)}\n`;
+            texto += `📐 Diámetro: ${diametroVal}mm\n`;
+        }
+
+        if (registroArmado.sabor) {
+            texto += `🥮 Sabor de bizcochuelo / base: ${registroArmado.sabor}\n`;
+        } else if (registroArmado.bizcochuelo) {
+            texto += `🥮 Base utilizada: ${registroArmado.bizcochuelo}\n`;
+        }
+
+        const totalRellenosContados = registroArmado.rellenos.length;
+        if (totalRellenosContados > 0) {
+            texto += `🍰 Rellenos incluidos (${totalRellenosContados} ${totalRellenosContados === 1 ? 'relleno' : 'rellenos'}):\n`;
+            registroArmado.rellenos.forEach(r => {
+                texto += `   • ${r}\n`;
             });
         }
 
-        const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
+        if (registroArmado.cobertura) {
+            texto += `🎨 Cobertura: ${registroArmado.cobertura}\n`;
+        }
+
+        texto += `\n💰 VALOR TOTAL DEL PRESUPUESTO: ${precioTotal}\n\n`;
+        texto += `Quedo a tu entera disposición por cualquier duda o para confirmar tu pedido. ¡Muchas gracias!`;
+
+        const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `Presupuesto_${nombreReceta.replace(/\s+/g, '_')}.txt`;
+        link.download = `Presupuesto_${nombreReceta.replace(/\s+/g, "_")}.txt`;
         link.click();
     }
 
-    function exportarPdfReal() {
-        if (!window.jspdf || !window.jspdf.jsPDF) {
-            alert('La librería de PDF no está lista aún. Inténtalo nuevamente en unos segundos.');
-            return;
-        }
-
-        if (ingredientes.length === 0) {
-            alert('Agregue al menos un insumo para exportar el PDF.');
-            return;
-        }
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const nombreReceta = document.getElementById('nombreReceta').value.trim() || 'Torta Especial';
-
-        doc.setFontSize(18);
-        doc.text('Presupuesto de Pastelería', 14, 18);
-        doc.setFontSize(11);
-        doc.text(`Producto: ${nombreReceta}`, 14, 30);
-        doc.text(`Rendimiento: ${document.getElementById('rendimiento').value} porciones`, 14, 38);
-        doc.text(`M.O.D.: ${document.getElementById('resMdo').innerText}`, 14, 46);
-        doc.text(`Costo total: ${document.getElementById('resCostoTotal').innerText}`, 14, 54);
-        doc.text(`Precio venta recomendado: ${document.getElementById('resPrecioTotal').innerText}`, 14, 62);
-
-        let y = 78;
-        doc.setFontSize(12);
-        doc.text('Insumos incluidos:', 14, y);
-        y += 8;
-        doc.setFontSize(10);
-
-        ingredientes.forEach((item, index) => {
-            if (y > 265) {
-                doc.addPage();
-                y = 20;
-            }
-            doc.text(`${index + 1}. ${item.nombre} | ${item.fmtUso} | $${item.costo.toFixed(2)}`, 14, y);
-            y += 8;
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("./sw.js").catch((error) => {
+                console.error("No se pudo activar el modo sin conexión:", error);
+            });
         });
-
-        doc.save(`Presupuesto_${nombreReceta.replace(/\s+/g, '_')}.pdf`);
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        cargarPresupuestoLocal();
-    });
 </script>
 
 </body>
