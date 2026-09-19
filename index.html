@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Presupuestador Panadería & Importador PDF</title>
-    <!-- Librería PDF.js para lectura de documentos en el navegador -->
+    <title>Cotizador de Pastelería Profesional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            --primary: #4A3228;
-            --accent: #C86D51;
-            --bg: #F5F2EB;
+            --primary: #5D3A00;
+            --accent: #D76F86;
+            --accent-hover: #C2566F;
+            --bg: #FAF5EF;
             --card-bg: #FFFFFF;
-            --text: #2B2B2B;
-            --text-muted: #666666;
-            --success: #1E6B39;
-            --border: #E0DDD5;
+            --text: #2D2522;
+            --text-muted: #6E655F;
+            --success: #288046;
+            --border: #E8DEC8;
             --radius: 12px;
         }
 
@@ -34,7 +35,7 @@
         }
 
         .container {
-            max-width: 850px;
+            max-width: 980px;
             margin: 0 auto;
         }
 
@@ -45,8 +46,8 @@
 
         header h1 {
             color: var(--primary);
-            font-size: 1.4rem;
-            margin-bottom: 6px;
+            font-size: 1.7rem;
+            margin-bottom: 4px;
         }
 
         .card {
@@ -54,7 +55,7 @@
             border-radius: var(--radius);
             padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             border: 1px solid var(--border);
         }
 
@@ -65,7 +66,43 @@
             margin-bottom: 12px;
             border-bottom: 2px solid var(--bg);
             padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
+
+        .pdf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pdf-uploader-box {
+            border: 2px dashed var(--accent);
+            background-color: #FFF9F7;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .pdf-uploader-box input { display: none; }
+
+        .btn-quick-ref {
+            background-color: #EFE6D8;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .btn-quick-ref:hover { background-color: #E3D5C0; }
 
         .form-grid {
             display: grid;
@@ -120,53 +157,60 @@
             transition: background 0.2s;
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            width: 100%;
-        }
+        .btn-primary { background-color: var(--primary); color: white; width: 100%; }
+        .btn-accent { background-color: var(--accent); color: white; }
+        .btn-accent:hover { background-color: var(--accent-hover); }
 
-        .btn-primary:active {
-            background-color: var(--accent);
-        }
-
-        .btn-accent {
-            background-color: var(--accent);
-            color: white;
-        }
-
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-            padding: 4px 8px;
-            font-size: 0.8rem;
-        }
-
-        .btn-warning {
-            background-color: #E67E22;
-            color: white;
-            padding: 4px 8px;
-            font-size: 0.8rem;
-            margin-right: 4px;
-        }
-
-        .btn-danger {
-            background-color: #D9534F;
-            color: white;
-            padding: 4px 8px;
-            font-size: 0.8rem;
-        }
-
-        .btn-outline {
-            background: transparent;
+        .btn-preset {
+            background-color: #FAF0E6;
+            color: var(--primary);
             border: 1px solid var(--border);
-            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .btn-preset:hover { background-color: #F4E2D0; }
+
+        .btn-success { background-color: var(--success); color: white; padding: 4px 8px; font-size: 0.8rem; }
+        .btn-warning { background-color: #E67E22; color: white; padding: 4px 8px; font-size: 0.8rem; margin-right: 4px; }
+        .btn-danger { background-color: #D9534F; color: white; padding: 4px 8px; font-size: 0.8rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+
+        .alert-warning {
+            display: none;
+            background-color: #FEF2F2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .cat-block {
+            background-color: #FAF7F2;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .cat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .table-responsive {
             overflow-x: auto;
-            margin-top: 10px;
-            max-height: 280px;
+            max-height: 220px;
             overflow-y: auto;
         }
 
@@ -192,7 +236,7 @@
         }
 
         .summary-box {
-            background: #EFEAE1;
+            background: #F5EBE1;
             border-radius: 8px;
             padding: 12px;
             margin-top: 10px;
@@ -224,38 +268,73 @@
             display: flex;
             gap: 10px;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
 
-        .pdf-uploader {
-            border: 2px dashed var(--accent);
-            background-color: #FAF5F2;
-            padding: 15px;
-            text-align: center;
-            border-radius: var(--radius);
-            cursor: pointer;
-            margin-bottom: 10px;
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
 
-        .pdf-uploader input {
-            display: none;
+        .switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #FFF7EE;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 12px;
         }
 
-        .search-box {
-            margin-bottom: 10px;
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
         }
 
-        .search-box input {
-            background-color: #FFFFFF;
-            border: 2px solid var(--accent);
+        .preset-card {
+            background: #FAF7F2;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .actions-cell {
-            white-space: nowrap;
+        .preset-card h4 {
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .preset-card p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .pdf-select-box {
+            background-color: #FFF3E0;
+            border: 1px solid #FFE0B2;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .small-note {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 6px;
         }
 
         @media (min-width: 600px) {
             body { padding: 20px; }
-            header h1 { font-size: 1.8rem; }
+            header h1 { font-size: 2rem; }
             .form-grid { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
@@ -264,28 +343,44 @@
 
 <div class="container">
     <header>
-        <h1>🥖 Presupuestador de Panadería</h1>
+        <h1>🎂 Cotizador de Pastelería</h1>
     </header>
 
-    <!-- Importador de PDF de Proveedores -->
     <div class="card">
-        <div class="card-title">📄 Importar Lista de Precios (PDF de Distribuidor)</div>
-        <div class="pdf-uploader" onclick="document.getElementById('pdfInput').click()">
-            <span id="pdfStatus">📁 Haz clic para cargar la lista en PDF de tu proveedor</span>
-            <input type="file" id="pdfInput" accept="application/pdf" onchange="procesarPDF(event)">
+        <div class="card-title">📄 1. Importar Listas de Precios (PDFs por Categoría)</div>
+        <div class="pdf-grid">
+            <div class="pdf-uploader-box" onclick="document.getElementById('pdfInputTortas').click()">
+                <strong style="color: var(--primary);">🎂 PDF Tortas / Masas</strong><br>
+                <span id="stTortas">📁 Cargar lista de ingredientes base</span>
+                <input type="file" id="pdfInputTortas" accept="application/pdf" onchange="procesarPDF(event, 'tortas')">
+            </div>
+
+            <div class="pdf-uploader-box" onclick="document.getElementById('pdfInputRellenos').click()">
+                <strong style="color: var(--primary);">🍓 PDF Rellenos / Topglass</strong><br>
+                <span id="stRellenos">📁 Cargar lista de rellenos y pastas</span>
+                <input type="file" id="pdfInputRellenos" accept="application/pdf" onchange="procesarPDF(event, 'rellenos')">
+            </div>
+
+            <div class="pdf-uploader-box" onclick="document.getElementById('pdfInputPacking').click()">
+                <strong style="color: var(--primary);">📦 PDF Packing / Empaque</strong><br>
+                <span id="stPacking">📁 Cargar lista de cajas y discos</span>
+                <input type="file" id="pdfInputPacking" accept="application/pdf" onchange="procesarPDF(event, 'packing')">
+            </div>
         </div>
 
-        <div id="contenedorCatalogo" style="display: none;">
-            <div class="search-box">
-                <label for="buscarPdfInput">🔍 Buscar insumo en la lista del PDF:</label>
-                <input type="text" id="buscarPdfInput" placeholder="Escribe para buscar (ej: Harina, Chocolate, Manteca)..." oninput="filtrarProductosPdf()">
+        <button class="btn-quick-ref" onclick="usarReferenciasRecientes()">🔄 Tomar referencias del cargado recientemente</button>
+
+        <div id="contenedorCatalogo" style="display: none; margin-top: 15px;">
+            <div class="form-group">
+                <label for="buscarPdfInput">🔍 Buscar insumo en el catálogo consolidado de PDFs:</label>
+                <input type="text" id="buscarPdfInput" placeholder="Buscar harina, chocolate, caja, dulce..." oninput="filtrarProductosPdf()">
             </div>
-            
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
                             <th>Producto Extraído</th>
+                            <th>Origen</th>
                             <th>Precio ($)</th>
                             <th>Envase</th>
                             <th>Acción</th>
@@ -297,13 +392,12 @@
         </div>
     </div>
 
-    <!-- Información de la Receta -->
     <div class="card">
-        <div class="card-title">1. Datos del Producto / Receta</div>
+        <div class="card-title">2. Datos de la Torta / Preparación</div>
         <div class="form-grid">
             <div class="form-group full-width">
-                <label for="nombreReceta">Nombre del Producto</label>
-                <input type="text" id="nombreReceta" value="Torta Marquise de Chocolate">
+                <label for="nombreReceta">Nombre del Producto / Torta</label>
+                <input type="text" id="nombreReceta" value="Torta Personalizada Especial">
             </div>
             <div class="form-group">
                 <label for="rendimiento">Rendimiento (Porciones)</label>
@@ -314,7 +408,7 @@
                 <input type="number" id="horasMdo" value="2.5" step="0.5" inputmode="decimal" oninput="calcularTotales()">
             </div>
             <div class="form-group">
-                <label for="tarifaMdo">Valor Hora ($)</label>
+                <label for="tarifaMdo">Valor Hora Trabajo ($)</label>
                 <input type="number" id="tarifaMdo" value="1500" inputmode="decimal" oninput="calcularTotales()">
             </div>
             <div class="form-group">
@@ -322,33 +416,198 @@
                 <input type="number" id="cifPct" value="15" inputmode="decimal" oninput="calcularTotales()">
             </div>
             <div class="form-group">
-                <label for="margenPct">Margen Ganancia (%)</label>
+                <label for="margenPct">Margen Ganancia General (%)</label>
                 <input type="number" id="margenPct" value="40" inputmode="decimal" oninput="calcularTotales()">
             </div>
         </div>
     </div>
 
-    <!-- Agregar Ingredientes Manual o desde PDF -->
+    <div class="card">
+        <div class="card-title">3. Preparaciones Base, Rellenos, Coberturas y Packing Rápidos</div>
+        <div class="preset-grid">
+            <div class="preset-card">
+                <div>
+                    <h4>🥮 Mezcla para Bizcochuelo</h4>
+                    <p>Proporción por huevo según molde seleccionado.</p>
+                    <label for="selectDiametro">Diámetro Molde:</label>
+                    <select id="selectDiametro">
+                        <option value="160">160 mm (3 huevos)</option>
+                        <option value="180">180 mm (4 huevos)</option>
+                        <option value="200" selected>200 mm (6 huevos)</option>
+                        <option value="240">240 mm (8 huevos)</option>
+                    </select>
+                    <label for="selectSaborBizcochuelo" style="margin-top: 6px; display: block;">Sabor Bizcochuelo:</label>
+                    <select id="selectSaborBizcochuelo">
+                        <option value="Vainilla" selected>Vainilla</option>
+                        <option value="Chocolate">Chocolate</option>
+                        <option value="Mixto">Mixto (Vainilla / Chocolate)</option>
+                    </select>
+                </div>
+                <button class="btn btn-preset" onclick="cargarBizcochueloPreset()">+ Cargar Bizcochuelo</button>
+            </div>
+
+            <div class="preset-card">
+                <div>
+                    <h4>🥧 Masas Quebradas</h4>
+                    <p>Selecciona variante según estilo y sabor.</p>
+                    <label for="selectMasaQuebrada">Estilo de Masa:</label>
+                    <select id="selectMasaQuebrada">
+                        <option value="sablee">Sablée (>50% manteca)</option>
+                        <option value="brisee">Brisée (50% manteca)</option>
+                        <option value="sucree">Sucrée (&lt;50% manteca)</option>
+                    </select>
+                    <label for="selectSaborMasaQuebrada" style="margin-top: 6px; display: block;">Sabor de Masa:</label>
+                    <select id="selectSaborMasaQuebrada">
+                        <option value="Vainilla / Tradicional" selected>Vainilla / Tradicional</option>
+                        <option value="Chocolate">Chocolate</option>
+                    </select>
+                </div>
+                <button class="btn btn-preset" onclick="cargarMasaQuebradaPreset()">+ Cargar Masa</button>
+            </div>
+
+            <div class="preset-card">
+                <div>
+                    <h4>🍓 Subconjuntos de Rellenos</h4>
+                    <p>Amplio abanico de rellenos tradicionales y mousses.</p>
+                    <label for="selectRelleno">Relleno a Agregar:</label>
+                    <select id="selectRelleno" onchange="toggleMousseSubmenu(this.value)">
+                        <option value="crema_toppings">Crema + Toppings (Foto/Mazapán)</option>
+                        <option value="ganache_negro">Ganache de Chocolate Negro</option>
+                        <option value="ganache_blanco">Ganache de Chocolate Blanco</option>
+                        <option value="mousse">Mousse (Seleccionar sabor)</option>
+                        <option value="buttercream">Buttercream (Huevos, Manteca, Azúcar)</option>
+                        <option value="butternache">Butternache (Manteca, Choc, Crema)</option>
+                        <option value="mermelada">Mermelada (Frutas + Azúcar)</option>
+                        <option value="membrillo">Dulce de Membrillo</option>
+                        <option value="batata">Dulce de Batata</option>
+                        <option value="ricota">Ricota Preparada Especial</option>
+                        <option value="ddl_toppings">Dulce de Leche + Toppings Combinados</option>
+                    </select>
+
+                    <div id="boxMousseSubmenu" style="display: none; margin-top: 8px;">
+                        <label for="selectSaborMousseRelleno">Sabor de Mousse:</label>
+                        <select id="selectSaborMousseRelleno">
+                            <option value="Chocolate Negro" selected>Chocolate Negro</option>
+                            <option value="Chocolate Blanco">Chocolate Blanco</option>
+                            <option value="Dulce de Leche">Dulce de Leche</option>
+                            <option value="Frutilla">Frutilla</option>
+                            <option value="Maracuyá">Maracuyá</option>
+                            <option value="Limón">Limón</option>
+                            <option value="Frutos Rojos">Frutos Rojos</option>
+                            <option value="Café / Moka">Café / Moka</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-preset" onclick="cargarRellenoPreset()">+ Cargar Relleno</button>
+            </div>
+
+            <div class="preset-card">
+                <div>
+                    <h4>✨ Pastas Saborizantes Topglass</h4>
+                    <p>Saborización profesional para rellenos.</p>
+                    <label for="selectTopglassRelleno">Sabor Topglass:</label>
+                    <select id="selectTopglassRelleno">
+                        <option value="Marroc" selected>Marroc</option>
+                        <option value="Frutos del Bosque">Frutos del Bosque</option>
+                        <option value="Avellana / Nutella">Avellana / Nutella</option>
+                        <option value="Pistacho">Pistacho</option>
+                        <option value="Frutilla">Frutilla</option>
+                        <option value="Banana">Banana</option>
+                        <option value="Menta">Menta</option>
+                        <option value="Tiramisú">Tiramisú</option>
+                        <option value="Dulce de Leche">Dulce de Leche</option>
+                        <option value="Limón">Limón</option>
+                        <option value="Maracuyá">Maracuyá</option>
+                        <option value="Coco">Coco</option>
+                        <option value="Bon o Bon / Maní">Bon o Bon / Maní</option>
+                    </select>
+                </div>
+                <button class="btn btn-preset" onclick="cargarTopglassRellenoPreset()">+ Cargar Saborizante</button>
+            </div>
+
+            <div class="preset-card">
+                <div>
+                    <h4>🎨 Cobertura de Torta</h4>
+                    <p>Revestimiento exterior para acabado final.</p>
+                    <label for="selectCobertura">Tipo de Cobertura:</label>
+                    <select id="selectCobertura">
+                        <option value="ganache_negro" selected>Ganache de Chocolate Negro</option>
+                        <option value="ganache_blanco">Ganache de Chocolate Blanco</option>
+                        <option value="buttercream">Buttercream</option>
+                        <option value="crema">Crema Chantilly</option>
+                        <option value="butternache">Butternache</option>
+                    </select>
+                    <label for="selectCoberturaTopglass" style="margin-top: 6px; display: block;">Saborizante Topglass (Opcional):</label>
+                    <select id="selectCoberturaTopglass">
+                        <option value="ninguno" selected>-- Sin saborizante extra --</option>
+                        <option value="Marroc">Topglass Marroc</option>
+                        <option value="Frutos del Bosque">Topglass Frutos del Bosque</option>
+                        <option value="Avellana / Nutella">Topglass Avellana / Nutella</option>
+                        <option value="Pistacho">Topglass Pistacho</option>
+                        <option value="Frutilla">Topglass Frutilla</option>
+                        <option value="Banana">Topglass Banana</option>
+                        <option value="Menta">Topglass Menta</option>
+                        <option value="Tiramisú">Topglass Tiramisú</option>
+                        <option value="Dulce de Leche">Topglass Dulce de Leche</option>
+                        <option value="Limón">Topglass Limón</option>
+                        <option value="Maracuyá">Topglass Maracuyá</option>
+                        <option value="Coco">Topglass Coco</option>
+                        <option value="Bon o Bon / Maní">Topglass Bon o Bon / Maní</option>
+                    </select>
+                </div>
+                <button class="btn btn-preset" onclick="cargarCoberturaPreset()">+ Cargar Cobertura</button>
+            </div>
+
+            <div class="preset-card">
+                <div>
+                    <h4>📦 Empaque / Packing</h4>
+                    <p>Incorpóralo desde el PDF de Packing o manual.</p>
+                    <label for="selectPacking">Tipo de Presentación:</label>
+                    <select id="selectPacking">
+                        <option value="caja_disco">Caja Torta + Disco Base</option>
+                        <option value="caja_completa">Caja + Disco + Cinta/Moño</option>
+                    </select>
+                </div>
+                <button class="btn btn-preset" onclick="cargarPackingPreset()">+ Cargar Packing</button>
+            </div>
+        </div>
+    </div>
+
     <div class="card" id="seccionInsumo">
-        <div class="card-title" id="tituloInsumoForm">2. Insumo para la Receta</div>
+        <div class="card-title" id="tituloInsumoForm">4. Agregar / Editar Insumo Manual o desde PDF</div>
+        <div class="pdf-select-box">
+            <label for="selectInsumoPdf">💡 Traer datos desde las listas PDF cargadas:</label>
+            <select id="selectInsumoPdf" onchange="seleccionarInsumoDesdePdfCombo(this.value)">
+                <option value="">-- Seleccionar un insumo extraído del PDF --</option>
+            </select>
+        </div>
+
         <div class="form-grid">
             <div class="form-group full-width">
-                <label for="ingNombre">Nombre del Ingrediente</label>
-                <input type="text" id="ingNombre" placeholder="Ej: Harina 0000">
+                <label for="ingNombre">Nombre del Ingrediente / Insumo</label>
+                <input type="text" id="ingNombre" placeholder="Ej: Harina, Dulce de Leche, Caja Torta...">
             </div>
             <div class="form-group">
-                <label for="ingPrecioPkg">Precio Paquete ($)</label>
-                <input type="number" id="ingPrecioPkg" placeholder="0.00" inputmode="decimal">
+                <label for="ingCategoria">Categoría Costo Directo</label>
+                <select id="ingCategoria">
+                    <option value="bizcochuelo">🥮 Bizcochuelo / Masas</option>
+                    <option value="rellenos">🍓 Rellenos</option>
+                    <option value="packing">📦 Packing / Empaque</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ingPrecioPkg">Precio Paquete/Envase ($)</label>
+                <input type="number" id="ingPrecioPkg" placeholder="1000" inputmode="decimal">
             </div>
             <div class="form-group">
                 <label for="ingCantPkg">Formato Paquete</label>
                 <div class="input-group">
                     <input type="number" id="ingCantPkg" placeholder="1000" inputmode="decimal">
                     <select id="ingUnitPkg" style="width: 70px;">
-                        <option value="kg">kg</option>
                         <option value="g">g</option>
-                        <option value="l">l</option>
+                        <option value="kg">kg</option>
                         <option value="ml">ml</option>
+                        <option value="l">l</option>
                         <option value="u">u</option>
                     </select>
                 </div>
@@ -356,7 +615,7 @@
             <div class="form-group">
                 <label for="ingCantUsada">Cantidad Usada</label>
                 <div class="input-group">
-                    <input type="number" id="ingCantUsada" placeholder="250" inputmode="decimal">
+                    <input type="number" id="ingCantUsada" placeholder="240" inputmode="decimal">
                     <select id="ingUnitUsada" style="width: 70px;">
                         <option value="g">g</option>
                         <option value="kg">kg</option>
@@ -367,38 +626,120 @@
                 </div>
             </div>
             <div class="form-group full-width" style="margin-top: 6px;">
-                <button class="btn btn-primary" id="btnAgregarIng" onclick="agregarOActualizarIngrediente()">+ Agregar Insumo a la Receta</button>
+                <button class="btn btn-primary" id="btnAgregarIng" onclick="agregarOActualizarIngrediente()">+ Agregar / Guardar Insumo en Receta</button>
             </div>
         </div>
     </div>
 
-    <!-- Detalle de Insumos Agregados -->
     <div class="card">
-        <div class="card-title">3. Desglose de Receta</div>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ingrediente</th>
-                        <th>Uso</th>
-                        <th>Costo ($)</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaIngredientes">
-                    <tr>
-                        <td colspan="4" style="text-align: center; color: var(--text-muted);">No hay ingredientes agregados.</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="card-title">5. Desglose Interno de Costos Directos</div>
+        <div id="alertWarningFalta" class="alert-warning">⚠️ Falta cargar algún item en los costos directos.</div>
+
+        <div class="cat-block">
+            <div class="cat-header">
+                <span>🥮 1. Ingredientes para Bizcochuelo / Masas</span>
+                <span id="subtotalBizcochuelo">$0.00</span>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th>Uso</th>
+                            <th>Costo ($)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBizcochuelo">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="cat-block">
+            <div class="cat-header">
+                <span>🍓 2. Rellenos</span>
+                <span id="subtotalRellenos">$0.00</span>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th>Uso</th>
+                            <th>Costo ($)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaRellenos">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="cat-block">
+            <div class="cat-header">
+                <span>📦 3. Packing / Empaque</span>
+                <span id="subtotalPacking">$0.00</span>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th>Uso</th>
+                            <th>Costo ($)</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPacking">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Resumen y Resultados -->
     <div class="card">
-        <div class="card-title">4. Resumen de Presupuesto</div>
+        <div class="card-title">6. Margen por Categoría / Guardado</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="margenBizPct">Margen Bizcochuelo/Masas (%)</label>
+                <input type="number" id="margenBizPct" value="40" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+            <div class="form-group">
+                <label for="margenRellenosPct">Margen Rellenos (%)</label>
+                <input type="number" id="margenRellenosPct" value="35" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+            <div class="form-group">
+                <label for="margenPackingPct">Margen Packing (%)</label>
+                <input type="number" id="margenPackingPct" value="30" inputmode="decimal" oninput="calcularTotales()">
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-accent" onclick="guardarPresupuestoLocal()">💾 Guardar presupuesto</button>
+            <button class="btn btn-outline" onclick="cargarPresupuestoLocal()">📂 Recuperar último</button>
+            <button class="btn btn-outline" onclick="borrarPresupuestoLocal()">🗑️ Borrar guardado</button>
+        </div>
+
+        <div class="switch-row">
+            <label for="modoReporte">Modo de reporte</label>
+            <select id="modoReporte" style="max-width: 200px;">
+                <option value="cliente">Cliente</option>
+                <option value="interno">Interno</option>
+            </select>
+        </div>
+        <div class="small-note">Los datos se guardan en el navegador para recuperar el presupuesto sin perder el trabajo.</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">7. Resumen de Presupuesto</div>
+
         <div class="summary-row">
-            <span>Materia Prima Directa:</span>
+            <span>Materia Prima + Packing Directo:</span>
             <span id="resMateriaPrima">$0.00</span>
         </div>
         <div class="summary-row">
@@ -416,22 +757,31 @@
                 <span id="resCostoTotal">$0.00</span>
             </div>
             <div class="summary-row">
-                <span>Costo por Unidad:</span>
+                <span>Costo por Porción/Unidad:</span>
                 <span id="resCostoUnitario">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Precio sugerido Bizcochuelo/Masas:</span>
+                <span id="resPrecioBiz">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Precio sugerido Rellenos:</span>
+                <span id="resPrecioRellenos">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Precio sugerido Packing:</span>
+                <span id="resPrecioPacking">$0.00</span>
             </div>
             <div class="summary-row highlight" style="margin-top: 8px;">
                 <span>PRECIO VENTA RECOMENDADO:</span>
                 <span id="resPrecioTotal">$0.00</span>
             </div>
-            <div class="summary-row highlight">
-                <span>Precio Sugerido por Unidad:</span>
-                <span id="resPrecioUnitario">$0.00</span>
-            </div>
         </div>
 
         <div class="action-bar">
-            <button class="btn btn-outline" onclick="limpiarTodo()">Limpiar</button>
-            <button class="btn btn-accent" style="width:100%" onclick="exportarReporte()">Exportar (.txt)</button>
+            <button class="btn btn-outline" onclick="limpiarTodo()">Limpiar Receta</button>
+            <button class="btn btn-accent" onclick="exportarReporteCliente()">📋 Exportar .txt</button>
+            <button class="btn btn-accent" onclick="exportarPdfReal()">📄 Exportar PDF</button>
         </div>
     </div>
 </div>
@@ -439,176 +789,583 @@
 <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    let ingredientes = [];
-    let productosPdfExtraidos = [];
-    let indiceEdicion = -1; // -1 significa que estamos agregando un nuevo ingrediente
+    const STORAGE_KEY = 'presupuesto_panaderia_state_v1';
 
-    // --- LÓGICA DE LECTURA DE PDF ---
-    async function procesarPDF(event) {
+    let ingredientes = [];
+    let pdfTortas = [];
+    let pdfRellenos = [];
+    let pdfPacking = [];
+    let pdfConsolidado = [];
+    let indiceEdicion = -1;
+
+    let registroArmado = {
+        bizcochuelo: '',
+        diametroTexto: '',
+        sabor: '',
+        rellenos: [],
+        cobertura: ''
+    };
+
+    function toggleMousseSubmenu(val) {
+        const box = document.getElementById('boxMousseSubmenu');
+        box.style.display = (val === 'mousse') ? 'block' : 'none';
+    }
+
+    async function procesarPDF(event, categoria) {
         const file = event.target.files[0];
         if (!file) return;
 
-        const statusLabel = document.getElementById("pdfStatus");
-        statusLabel.innerText = "⏳ Analizando PDF... Por favor espera.";
+        let stElem;
+        if (categoria === 'tortas') stElem = document.getElementById('stTortas');
+        else if (categoria === 'rellenos') stElem = document.getElementById('stRellenos');
+        else stElem = document.getElementById('stPacking');
+
+        stElem.innerText = '⏳ Procesando PDF...';
 
         try {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            let lineasTexto = [];
+            const lineasTexto = [];
 
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
-                
                 let lastY = null;
-                let linea = "";
+                let linea = '';
 
                 textContent.items.forEach(item => {
                     if (lastY !== null && Math.abs(item.transform[5] - lastY) > 4) {
                         if (linea.trim().length > 0) lineasTexto.push(linea.trim());
-                        linea = "";
+                        linea = '';
                     }
-                    linea += " " + item.str;
+                    linea += ' ' + item.str;
                     lastY = item.transform[5];
                 });
                 if (linea.trim().length > 0) lineasTexto.push(linea.trim());
             }
 
-            extraerProductos(lineasTexto);
-            statusLabel.innerText = `✅ PDF Cargado: ${file.name} (${productosPdfExtraidos.length} productos detectados)`;
+            const extraidos = extraerProductosDeTexto(lineasTexto, categoria);
+
+            if (categoria === 'tortas') pdfTortas = extraidos;
+            else if (categoria === 'rellenos') pdfRellenos = extraidos;
+            else if (categoria === 'packing') pdfPacking = extraidos;
+
+            consolidarPdfs();
+            stElem.innerText = `✅ ${file.name} (${extraidos.length} prod.)`;
         } catch (error) {
             console.error(error);
-            alert("Error al leer el archivo PDF. Asegúrate de que no esté protegido con contraseña.");
-            statusLabel.innerText = "📁 Haz clic para cargar la lista en PDF de tu proveedor";
+            alert('Error al leer el PDF. Asegúrate de que sea un archivo PDF válido.');
+            stElem.innerText = '📁 Haz clic para reintentar';
         }
     }
 
-    function extraerProductos(lineas) {
-        productosPdfExtraidos = [];
-        document.getElementById("buscarPdfInput").value = "";
-        
+    function extraerProductosDeTexto(lineas, origen) {
+        const lista = [];
         const regexPrecio = /(\$?\s*\d+[\.,]?\d*[\.,]\d{2}|\$?\s*\d{3,})/;
         const regexUnidad = /(\d+[\.,]?\d*)\s*(kg|g|gr|l|ml|u|unid|porcion)/i;
 
         lineas.forEach(linea => {
             const matchPrecio = linea.match(regexPrecio);
-            if (matchPrecio) {
-                let precioStr = matchPrecio[0].replace("$", "").trim();
-                if (precioStr.includes(",") && precioStr.includes(".")) {
-                    precioStr = precioStr.replace(".", "").replace(",", ".");
-                } else if (precioStr.includes(",")) {
-                    precioStr = precioStr.replace(",", ".");
-                }
-                const precio = parseFloat(precioStr);
+            if (!matchPrecio) return;
 
-                if (!isNaN(precio) && precio > 0) {
-                    let nombre = linea.replace(matchPrecio[0], "").trim();
-                    
-                    let cant = 1;
-                    let unit = "u";
-                    const matchUnidad = linea.match(regexUnidad);
-                    if (matchUnidad) {
-                        cant = parseFloat(matchUnidad[1].replace(",", ".")) || 1;
-                        unit = matchUnidad[2].toLowerCase();
-                        if (unit === "gr") unit = "g";
-                        if (unit === "unid") unit = "u";
-                    }
+            let precioStr = matchPrecio[0].replace('$', '').trim();
+            if (precioStr.includes(',') && precioStr.includes('.')) {
+                precioStr = precioStr.replace('.', '').replace(',', '.');
+            } else if (precioStr.includes(',')) {
+                precioStr = precioStr.replace(',', '.');
+            }
 
-                    if (nombre.length > 2) {
-                        productosPdfExtraidos.push({
-                            nombre: nombre.substring(0, 45),
-                            precio: precio,
-                            cantPkg: cant,
-                            unitPkg: unit
-                        });
-                    }
-                }
+            const precio = parseFloat(precioStr);
+            if (isNaN(precio) || precio <= 0) return;
+
+            let nombre = linea.replace(matchPrecio[0], '').trim();
+            let cant = 1;
+            let unit = 'u';
+            const matchUnidad = linea.match(regexUnidad);
+            if (matchUnidad) {
+                cant = parseFloat(matchUnidad[1].replace(',', '.')) || 1;
+                unit = matchUnidad[2].toLowerCase();
+                if (unit === 'gr') unit = 'g';
+                if (unit === 'unid') unit = 'u';
+            }
+
+            if (nombre.length > 2) {
+                lista.push({
+                    nombre: nombre.substring(0, 50),
+                    precio: precio,
+                    cantPkg: cant,
+                    unitPkg: unit,
+                    origen: origen
+                });
             }
         });
 
-        renderizarTablaPdf(productosPdfExtraidos);
+        return lista;
+    }
+
+    function consolidarPdfs() {
+        pdfConsolidado = [...pdfTortas, ...pdfRellenos, ...pdfPacking];
+        actualizarSelectPdfCombo();
+        renderizarTablaPdf(pdfConsolidado);
+    }
+
+    function usarReferenciasRecientes() {
+        if (pdfConsolidado.length === 0) {
+            alert('Aún no has cargado ningún archivo PDF.');
+            return;
+        }
+
+        document.getElementById('contenedorCatalogo').style.display = 'block';
+        document.getElementById('buscarPdfInput').value = '';
+        renderizarTablaPdf(pdfConsolidado);
+        alert(`Se han cargado ${pdfConsolidado.length} referencias de precios desde los PDFs recientemente importados.`);
+    }
+
+    function actualizarSelectPdfCombo() {
+        const combo = document.getElementById('selectInsumoPdf');
+        combo.innerHTML = '<option value="">-- Seleccionar un insumo extraído del PDF --</option>';
+        pdfConsolidado.forEach((item, index) => {
+            const opt = document.createElement('option');
+            opt.value = index;
+            opt.innerText = `[${item.origen.toUpperCase()}] ${item.nombre} - $${item.precio} (${item.cantPkg} ${item.unitPkg})`;
+            combo.appendChild(opt);
+        });
+    }
+
+    function seleccionarInsumoDesdePdfCombo(indexVal) {
+        if (indexVal === '' || indexVal === undefined) return;
+        const item = pdfConsolidado[parseInt(indexVal, 10)];
+        if (!item) return;
+
+        document.getElementById('ingNombre').value = item.nombre;
+        document.getElementById('ingPrecioPkg').value = item.precio;
+        document.getElementById('ingCantPkg').value = item.cantPkg;
+        document.getElementById('ingUnitPkg').value = item.unitPkg;
+
+        if (item.origen === 'tortas') document.getElementById('ingCategoria').value = 'bizcochuelo';
+        else if (item.origen === 'rellenos') document.getElementById('ingCategoria').value = 'rellenos';
+        else if (item.origen === 'packing') document.getElementById('ingCategoria').value = 'packing';
+
+        document.getElementById('ingCantUsada').focus();
     }
 
     function filtrarProductosPdf() {
-        const query = document.getElementById("buscarPdfInput").value.toLowerCase().trim();
-        const productosFiltrados = productosPdfExtraidos.filter(item => 
-            item.nombre.toLowerCase().includes(query)
-        );
-        renderizarTablaPdf(productosFiltrados);
+        const query = document.getElementById('buscarPdfInput').value.toLowerCase().trim();
+        const filtrados = pdfConsolidado.filter(item => item.nombre.toLowerCase().includes(query));
+        renderizarTablaPdf(filtrados);
     }
 
-    function renderizarTablaPdf(listaProductos) {
-        const tbody = document.getElementById("tablaPdf");
-        const contenedor = document.getElementById("contenedorCatalogo");
-        tbody.innerHTML = "";
+    function renderizarTablaPdf(lista) {
+        const tbody = document.getElementById('tablaPdf');
+        const contenedor = document.getElementById('contenedorCatalogo');
+        tbody.innerHTML = '';
 
-        if (productosPdfExtraidos.length === 0) {
-            contenedor.style.display = "none";
-            alert("No se detectaron líneas con precios en el PDF.");
+        if (pdfConsolidado.length === 0) {
+            contenedor.style.display = 'none';
             return;
         }
 
-        contenedor.style.display = "block";
+        contenedor.style.display = 'block';
 
-        if (listaProductos.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin coincidencias para la búsqueda.</td></tr>';
+        if (lista.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Sin coincidencias para la búsqueda.</td></tr>';
             return;
         }
 
-        listaProductos.slice(0, 50).forEach((item) => {
-            const originalIndex = productosPdfExtraidos.indexOf(item);
-            const tr = document.createElement("tr");
+        lista.slice(0, 40).forEach((item) => {
+            const indexOriginal = pdfConsolidado.indexOf(item);
+            const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${item.nombre}</strong></td>
+                <td><small>${item.origen.toUpperCase()}</small></td>
                 <td>$${item.precio.toFixed(2)}</td>
                 <td>${item.cantPkg} ${item.unitPkg}</td>
-                <td><button class="btn btn-success" onclick="cargarInsumoDesdePdf(${originalIndex})">Usar</button></td>
+                <td><button class="btn btn-success" onclick="cargarInsumoAFormulario(${indexOriginal})">Usar</button></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    function cargarInsumoDesdePdf(index) {
-        cancelarEdicion();
-        const item = productosPdfExtraidos[index];
-        document.getElementById("ingNombre").value = item.nombre;
-        document.getElementById("ingPrecioPkg").value = item.precio;
-        document.getElementById("ingCantPkg").value = item.cantPkg;
-        document.getElementById("ingUnitPkg").value = item.unitPkg;
-        document.getElementById("ingCantUsada").focus();
+    function cargarInsumoAFormulario(index) {
+        const item = pdfConsolidado[index];
+        if (!item) return;
+
+        document.getElementById('ingNombre').value = item.nombre;
+        document.getElementById('ingPrecioPkg').value = item.precio;
+        document.getElementById('ingCantPkg').value = item.cantPkg;
+        document.getElementById('ingUnitPkg').value = item.unitPkg;
+
+        if (item.origen === 'tortas') document.getElementById('ingCategoria').value = 'bizcochuelo';
+        else if (item.origen === 'rellenos') document.getElementById('ingCategoria').value = 'rellenos';
+        else if (item.origen === 'packing') document.getElementById('ingCategoria').value = 'packing';
+
+        document.getElementById('seccionInsumo').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('ingCantUsada').focus();
     }
 
-    // --- LÓGICA DE PRESUPUESTO ---
+    function buscarDatosEnPdfs(termino) {
+        const encontrado = pdfConsolidado.find(p => p.nombre.toLowerCase().includes(termino.toLowerCase()));
+        if (encontrado) {
+            return {
+                encontrado: true,
+                nombre: encontrado.nombre,
+                precioPkg: encontrado.precio,
+                cantPkg: encontrado.cantPkg,
+                unitPkg: encontrado.unitPkg
+            };
+        }
+        return { encontrado: false };
+    }
+
+    function procesarListaInsumosPreset(itemsRequeridos, catDestino) {
+        const noEncontrados = [];
+
+        itemsRequeridos.forEach(req => {
+            const res = buscarDatosEnPdfs(req.query);
+            let precioPkg = 1000;
+            let cantPkg = req.cantPkgDefault || 1000;
+            let unitPkg = req.unitPkgDefault || 'g';
+
+            if (res.encontrado) {
+                precioPkg = res.precioPkg;
+                cantPkg = res.cantPkg;
+                unitPkg = res.unitPkg;
+            } else {
+                noEncontrados.push(req.nombreMostrar);
+            }
+
+            const basePkg = convertirABase(cantPkg, unitPkg);
+            const baseUsada = convertirABase(req.cantUsada, req.unitUsada);
+            const costo = (precioPkg / basePkg) * baseUsada;
+
+            ingredientes.push({
+                nombre: req.nombreMostrar,
+                categoria: catDestino,
+                precioPkg: precioPkg,
+                cantPkg: cantPkg,
+                unitPkg: unitPkg,
+                cantUsada: req.cantUsada,
+                unitUsada: req.unitUsada,
+                fmtPkg: `${cantPkg} ${unitPkg}`,
+                fmtUso: `${req.cantUsada} ${req.unitUsada}`,
+                costo: costo
+            });
+        });
+
+        if (noEncontrados.length > 0) {
+            alert('Falta cargar precios de algún ingrediente no encontrado en la lista, favor de cargarlo manualmente:\n\n• ' + noEncontrados.join('\n• '));
+        }
+
+        actualizarTabla();
+        calcularTotales();
+    }
+
+    function cargarBizcochueloPreset() {
+        const diam = parseInt(document.getElementById('selectDiametro').value, 10);
+        const sabor = document.getElementById('selectSaborBizcochuelo').value;
+        let huevos = 6;
+        let esenciaMl = 8;
+
+        if (diam === 160) { huevos = 3; esenciaMl = 5; }
+        else if (diam === 180) { huevos = 4; esenciaMl = 5; }
+        else if (diam === 200) { huevos = 6; esenciaMl = 8; }
+        else if (diam === 240) { huevos = 8; esenciaMl = 10; }
+
+        registroArmado.diametroTexto = `${diam}mm`;
+        registroArmado.sabor = sabor;
+        registroArmado.bizcochuelo = `Bizcochuelo ${sabor} - ${diam}mm`;
+
+        let harinaG = huevos * 40;
+        let azucarG = huevos * 40;
+        let cacaoG = 0;
+
+        if (sabor === 'Chocolate') {
+            cacaoG = Math.round(harinaG * 0.2);
+            harinaG = harinaG - cacaoG;
+        } else if (sabor === 'Mixto') {
+            cacaoG = Math.round(harinaG * 0.1);
+            harinaG = harinaG - cacaoG;
+        }
+
+        const lista = [
+            { query: 'harina', nombreMostrar: `Harina 0000 (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: harinaG, unitUsada: 'g' },
+            { query: 'azucar', nombreMostrar: `Azúcar (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: azucarG, unitUsada: 'g' },
+            { query: 'huevo', nombreMostrar: `Huevos (Bizcochuelo ${sabor} ${diam}mm)`, cantUsada: huevos, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' }
+        ];
+
+        if (cacaoG > 0) {
+            lista.push({ query: 'cacao', nombreMostrar: `Cacao Amargo (Bizcochuelo ${sabor})`, cantUsada: cacaoG, unitUsada: 'g', cantPkgDefault: 250, unitPkgDefault: 'g' });
+        }
+        if (sabor !== 'Chocolate') {
+            lista.push({ query: 'esencia', nombreMostrar: 'Esencia de Vainilla', cantUsada: esenciaMl, unitUsada: 'ml', cantPkgDefault: 100, unitPkgDefault: 'ml' });
+        }
+
+        procesarListaInsumosPreset(lista, 'bizcochuelo');
+    }
+
+    function cargarMasaQuebradaPreset() {
+        const tipo = document.getElementById('selectMasaQuebrada').value;
+        const sabor = document.getElementById('selectSaborMasaQuebrada').value;
+        let lista = [];
+        let nombreMasa = '';
+        let harinaG = 250;
+        let mantecaG = 150;
+        let cacaoG = 0;
+
+        if (tipo === 'sablee') {
+            nombreMasa = 'Masa Sablée';
+            mantecaG = 150;
+        } else if (tipo === 'brisee') {
+            nombreMasa = 'Masa Brisée';
+            mantecaG = 125;
+        } else {
+            nombreMasa = 'Masa Sucrée';
+            mantecaG = 100;
+        }
+
+        if (sabor === 'Chocolate') {
+            cacaoG = 30;
+            harinaG = harinaG - cacaoG;
+        }
+
+        registroArmado.sabor = `${nombreMasa} (${sabor})`;
+        registroArmado.bizcochuelo = `${nombreMasa} - ${sabor}`;
+
+        if (tipo === 'sablee') {
+            lista = [
+                { query: 'harina', nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: 'g' },
+                { query: 'manteca', nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'impalpable', nombreMostrar: 'Azúcar Impalpable', cantUsada: 100, unitUsada: 'g' },
+                { query: 'huevo', nombreMostrar: 'Huevos', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' }
+            ];
+        } else if (tipo === 'brisee') {
+            lista = [
+                { query: 'harina', nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: 'g' },
+                { query: 'manteca', nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'huevo', nombreMostrar: 'Huevos', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' }
+            ];
+        } else {
+            lista = [
+                { query: 'harina', nombreMostrar: `Harina 0000 (${nombreMasa} ${sabor})`, cantUsada: harinaG, unitUsada: 'g' },
+                { query: 'manteca', nombreMostrar: `Manteca (${nombreMasa})`, cantUsada: mantecaG, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 100, unitUsada: 'g' }
+            ];
+        }
+
+        if (cacaoG > 0) {
+            lista.push({ query: 'cacao', nombreMostrar: `Cacao Amargo (${nombreMasa})`, cantUsada: cacaoG, unitUsada: 'g', cantPkgDefault: 250, unitPkgDefault: 'g' });
+        }
+
+        procesarListaInsumosPreset(lista, 'bizcochuelo');
+    }
+
+    function cargarRellenoPreset() {
+        const rel = document.getElementById('selectRelleno').value;
+        let lista = [];
+
+        if (rel === 'crema_toppings') {
+            registroArmado.rellenos.push('Crema Chantilly con Adornos / Foto Comestible');
+            lista = [
+                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 300, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
+                { query: 'impalpable', nombreMostrar: 'Azúcar Impalpable', cantUsada: 40, unitUsada: 'g' },
+                { query: 'foto', nombreMostrar: 'Foto Comestible / Adornos de Mazapán', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' }
+            ];
+        } else if (rel === 'ganache_negro') {
+            registroArmado.rellenos.push('Ganache de Chocolate Negro');
+            lista = [
+                { query: 'chocolate', nombreMostrar: 'Chocolate Semi-amargo', cantUsada: 200, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 200, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+            ];
+        } else if (rel === 'ganache_blanco') {
+            registroArmado.rellenos.push('Ganache de Chocolate Blanco');
+            lista = [
+                { query: 'chocolate blanco', nombreMostrar: 'Chocolate Blanco', cantUsada: 200, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 150, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+            ];
+        } else if (rel === 'mousse') {
+            const saborMousse = document.getElementById('selectSaborMousseRelleno').value;
+            registroArmado.rellenos.push(`Mousse de ${saborMousse}`);
+
+            let ingredienteSabor = { query: 'chocolate', nombreMostrar: 'Chocolate Semi-amargo (Mousse)', cantUsada: 150, unitUsada: 'g' };
+
+            if (saborMousse === 'Chocolate Blanco') {
+                ingredienteSabor = { query: 'chocolate blanco', nombreMostrar: 'Chocolate Blanco (Mousse)', cantUsada: 150, unitUsada: 'g' };
+            } else if (saborMousse === 'Dulce de Leche') {
+                ingredienteSabor = { query: 'dulce', nombreMostrar: 'Dulce de Leche Repostero (Mousse)', cantUsada: 200, unitUsada: 'g' };
+            } else if (['Frutilla', 'Frutos Rojos', 'Maracuyá', 'Limón'].includes(saborMousse)) {
+                ingredienteSabor = { query: 'fruta', nombreMostrar: `Pulpa / Fruta de ${saborMousse} (Mousse)`, cantUsada: 150, unitUsada: 'g' };
+            } else if (saborMousse === 'Café / Moka') {
+                ingredienteSabor = { query: 'cafe', nombreMostrar: 'Café / Saborizante Moka (Mousse)', cantUsada: 20, unitUsada: 'g' };
+            }
+
+            lista = [
+                { query: 'crema', nombreMostrar: `Crema de Leche (Mousse de ${saborMousse})`, cantUsada: 250, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
+                { query: 'gelatina', nombreMostrar: 'Gelatina sin Sabor (Mousse)', cantUsada: 7, unitUsada: 'g', cantPkgDefault: 20, unitPkgDefault: 'g' },
+                ingredienteSabor
+            ];
+        } else if (rel === 'buttercream') {
+            registroArmado.rellenos.push('Buttercream Tradicional');
+            lista = [
+                { query: 'huevo', nombreMostrar: 'Huevos (Claras)', cantUsada: 3, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' },
+                { query: 'manteca', nombreMostrar: 'Manteca', cantUsada: 250, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 200, unitUsada: 'g' }
+            ];
+        } else if (rel === 'butternache') {
+            registroArmado.rellenos.push('Butternache Especial');
+            lista = [
+                { query: 'manteca', nombreMostrar: 'Manteca', cantUsada: 200, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'chocolate', nombreMostrar: 'Chocolate', cantUsada: 200, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 100, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+            ];
+        } else if (rel === 'mermelada') {
+            registroArmado.rellenos.push('Mermelada de Frutas');
+            lista = [
+                { query: 'fruta', nombreMostrar: 'Frutas a elección / Pulpa', cantUsada: 300, unitUsada: 'g' },
+                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 200, unitUsada: 'g' }
+            ];
+        } else if (rel === 'membrillo') {
+            registroArmado.rellenos.push('Dulce de Membrillo');
+            lista = [{ query: 'membrillo', nombreMostrar: 'Dulce de Membrillo', cantUsada: 400, unitUsada: 'g' }];
+        } else if (rel === 'batata') {
+            registroArmado.rellenos.push('Dulce de Batata');
+            lista = [{ query: 'batata', nombreMostrar: 'Dulce de Batata', cantUsada: 400, unitUsada: 'g' }];
+        } else if (rel === 'ricota') {
+            registroArmado.rellenos.push('Relleno de Ricota y Limón');
+            lista = [
+                { query: 'ricota', nombreMostrar: 'Ricota', cantUsada: 400, unitUsada: 'g' },
+                { query: 'huevo', nombreMostrar: 'Huevos', cantUsada: 2, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' },
+                { query: 'azucar', nombreMostrar: 'Azúcar', cantUsada: 100, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche', cantUsada: 100, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
+                { query: 'limon', nombreMostrar: 'Limón (Ralladura/Jugo)', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
+                { query: 'esencia', nombreMostrar: 'Esencia de Vainilla', cantUsada: 5, unitUsada: 'ml', cantPkgDefault: 100, unitPkgDefault: 'ml' }
+            ];
+        } else if (rel === 'ddl_toppings') {
+            registroArmado.rellenos.push('Dulce de leche + Toppings (Chips, Bon o bon, Merenguitos, Mantecol)');
+            lista = [
+                { query: 'dulce', nombreMostrar: 'Dulce de Leche Repostero', cantUsada: 400, unitUsada: 'g' },
+                { query: 'chips', nombreMostrar: 'Chips de Chocolate', cantUsada: 50, unitUsada: 'g' },
+                { query: 'bon', nombreMostrar: 'Bon o Bon', cantUsada: 2, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
+                { query: 'merengue', nombreMostrar: 'Merenguitos', cantUsada: 50, unitUsada: 'g' },
+                { query: 'mantecol', nombreMostrar: 'Mantecol', cantUsada: 50, unitUsada: 'g' }
+            ];
+        }
+
+        procesarListaInsumosPreset(lista, 'rellenos');
+    }
+
+    function cargarTopglassRellenoPreset() {
+        const saborTopglass = document.getElementById('selectTopglassRelleno').value;
+        registroArmado.rellenos.push(`Pasta Saborizante Topglass (${saborTopglass})`);
+
+        const lista = [
+            { query: saborTopglass.toLowerCase(), nombreMostrar: `Pasta Saborizante ${saborTopglass} Topglass`, cantUsada: 50, unitUsada: 'g', cantPkgDefault: 250, unitPkgDefault: 'g' }
+        ];
+
+        procesarListaInsumosPreset(lista, 'rellenos');
+    }
+
+    function cargarCoberturaPreset() {
+        const cob = document.getElementById('selectCobertura').value;
+        const sabExtra = document.getElementById('selectCoberturaTopglass').value;
+        let lista = [];
+        let nombreCobertura = '';
+
+        if (cob === 'ganache_negro') {
+            nombreCobertura = 'Ganache de Chocolate Negro';
+            lista = [
+                { query: 'chocolate', nombreMostrar: 'Chocolate Semi-amargo (Cobertura)', cantUsada: 250, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 250, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+            ];
+        } else if (cob === 'ganache_blanco') {
+            nombreCobertura = 'Ganache de Chocolate Blanco';
+            lista = [
+                { query: 'chocolate blanco', nombreMostrar: 'Chocolate Blanco (Cobertura)', cantUsada: 250, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 180, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+            ];
+        } else if (cob === 'buttercream') {
+            nombreCobertura = 'Buttercream';
+            lista = [
+                { query: 'huevo', nombreMostrar: 'Huevos (Claras) (Cobertura)', cantUsada: 3, unitUsada: 'u', cantPkgDefault: 12, unitPkgDefault: 'u' },
+                { query: 'manteca', nombreMostrar: 'Manteca (Cobertura)', cantUsada: 250, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'azucar', nombreMostrar: 'Azúcar (Cobertura)', cantUsada: 200, unitUsada: 'g' }
+            ];
+        } else if (cob === 'crema') {
+            nombreCobertura = 'Crema Chantilly';
+            lista = [
+                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 300, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' },
+                { query: 'impalpable', nombreMostrar: 'Azúcar Impalpable (Cobertura)', cantUsada: 40, unitUsada: 'g' }
+            ];
+        } else if (cob === 'butternache') {
+            nombreCobertura = 'Butternache';
+            lista = [
+                { query: 'manteca', nombreMostrar: 'Manteca (Cobertura)', cantUsada: 200, unitUsada: 'g', cantPkgDefault: 200, unitPkgDefault: 'g' },
+                { query: 'chocolate', nombreMostrar: 'Chocolate (Cobertura)', cantUsada: 200, unitUsada: 'g' },
+                { query: 'crema', nombreMostrar: 'Crema de Leche (Cobertura)', cantUsada: 100, unitUsada: 'ml', cantPkgDefault: 500, unitPkgDefault: 'ml' }
+            ];
+        }
+
+        if (sabExtra !== 'ninguno') {
+            nombreCobertura += ` (Saborizado con Topglass ${sabExtra})`;
+            lista.push({
+                query: sabExtra.toLowerCase(),
+                nombreMostrar: `Pasta Saborizante ${sabExtra} Topglass (Cobertura)`,
+                cantUsada: 40,
+                unitUsada: 'g',
+                cantPkgDefault: 250,
+                unitPkgDefault: 'g'
+            });
+        }
+
+        registroArmado.cobertura = nombreCobertura;
+        procesarListaInsumosPreset(lista, 'rellenos');
+    }
+
+    function cargarPackingPreset() {
+        const packType = document.getElementById('selectPacking').value;
+        let lista = [];
+
+        if (packType === 'caja_disco') {
+            lista = [
+                { query: 'caja', nombreMostrar: 'Caja para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
+                { query: 'disco', nombreMostrar: 'Disco / Base para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' }
+            ];
+        } else {
+            lista = [
+                { query: 'caja', nombreMostrar: 'Caja para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
+                { query: 'disco', nombreMostrar: 'Disco / Base para Torta', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' },
+                { query: 'cinta', nombreMostrar: 'Cinta / Moño Decorativo', cantUsada: 1, unitUsada: 'u', cantPkgDefault: 1, unitPkgDefault: 'u' }
+            ];
+        }
+
+        procesarListaInsumosPreset(lista, 'packing');
+    }
+
     function convertirABase(cantidad, unidad) {
-        if (unidad === "kg" || unidad === "l") return cantidad * 1000;
+        if (unidad === 'kg' || unidad === 'l') return cantidad * 1000;
         return cantidad;
     }
 
     function agregarOActualizarIngrediente() {
-        const nombre = document.getElementById("ingNombre").value.trim();
-        const precioPkg = parseFloat(document.getElementById("ingPrecioPkg").value);
-        const cantPkg = parseFloat(document.getElementById("ingCantPkg").value);
-        const unitPkg = document.getElementById("ingUnitPkg").value;
-        const cantUsada = parseFloat(document.getElementById("ingCantUsada").value);
-        const unitUsada = document.getElementById("ingUnitUsada").value;
+        const nombre = document.getElementById('ingNombre').value.trim();
+        const categoria = document.getElementById('ingCategoria').value;
+        const precioPkg = parseFloat(document.getElementById('ingPrecioPkg').value);
+        const cantPkg = parseFloat(document.getElementById('ingCantPkg').value);
+        const unitPkg = document.getElementById('ingUnitPkg').value;
+        const cantUsada = parseFloat(document.getElementById('ingCantUsada').value);
+        const unitUsada = document.getElementById('ingUnitUsada').value;
 
         if (!nombre || isNaN(precioPkg) || isNaN(cantPkg) || isNaN(cantUsada)) {
-            alert("Por favor complete todos los campos del ingrediente con valores numéricos válidos.");
+            alert('Por favor complete todos los campos numéricos del ingrediente.');
             return;
         }
 
         const basePkg = convertirABase(cantPkg, unitPkg);
         const baseUsada = convertirABase(cantUsada, unitUsada);
-
-        if (basePkg <= 0) {
-            alert("La cantidad del paquete debe ser mayor a 0.");
-            return;
-        }
-
         const costo = (precioPkg / basePkg) * baseUsada;
 
-        const objetoIngrediente = {
+        const obj = {
             nombre: nombre,
+            categoria: categoria,
             precioPkg: precioPkg,
             cantPkg: cantPkg,
             unitPkg: unitPkg,
@@ -620,12 +1377,10 @@
         };
 
         if (indiceEdicion >= 0) {
-            // Modo edición: actualiza el objeto existente
-            ingredientes[indiceEdicion] = objetoIngrediente;
+            ingredientes[indiceEdicion] = obj;
             cancelarEdicion();
         } else {
-            // Modo inserción: añade uno nuevo
-            ingredientes.push(objetoIngrediente);
+            ingredientes.push(obj);
             limpiarFormularioInsumo();
         }
 
@@ -637,146 +1392,316 @@
         const ing = ingredientes[index];
         indiceEdicion = index;
 
-        document.getElementById("ingNombre").value = ing.nombre;
-        document.getElementById("ingPrecioPkg").value = ing.precioPkg;
-        document.getElementById("ingCantPkg").value = ing.cantPkg;
-        document.getElementById("ingUnitPkg").value = ing.unitPkg;
-        document.getElementById("ingCantUsada").value = ing.cantUsada;
-        document.getElementById("ingUnitUsada").value = ing.unitUsada;
+        document.getElementById('ingNombre').value = ing.nombre;
+        document.getElementById('ingCategoria').value = ing.categoria || 'bizcochuelo';
+        document.getElementById('ingPrecioPkg').value = ing.precioPkg;
+        document.getElementById('ingCantPkg').value = ing.cantPkg;
+        document.getElementById('ingUnitPkg').value = ing.unitPkg;
+        document.getElementById('ingCantUsada').value = ing.cantUsada;
+        document.getElementById('ingUnitUsada').value = ing.unitUsada;
 
-        const btn = document.getElementById("btnAgregarIng");
-        btn.innerText = "💾 Guardar Cambios del Insumo";
-        btn.style.backgroundColor = "var(--success)";
+        const btn = document.getElementById('btnAgregarIng');
+        btn.innerText = '💾 Guardar Cambios en Insumo';
+        btn.style.backgroundColor = 'var(--success)';
 
-        document.getElementById("tituloInsumoForm").innerText = "✏️ Editando Insumo de la Receta";
-
-        // Desplazar suavemente hasta el formulario de edición
-        document.getElementById("seccionInsumo").scrollIntoView({ behavior: 'smooth', block: 'center' });
-        document.getElementById("ingCantUsada").focus();
+        document.getElementById('tituloInsumoForm').innerText = '✏️ Editando Insumo de la Receta';
+        document.getElementById('seccionInsumo').scrollIntoView({ behavior: 'smooth' });
     }
 
     function cancelarEdicion() {
         indiceEdicion = -1;
         limpiarFormularioInsumo();
-        const btn = document.getElementById("btnAgregarIng");
-        btn.innerText = "+ Agregar Insumo a la Receta";
-        btn.style.backgroundColor = "var(--primary)";
-        document.getElementById("tituloInsumoForm").innerText = "2. Insumo para la Receta";
+        const btn = document.getElementById('btnAgregarIng');
+        btn.innerText = '+ Agregar / Guardar Insumo en Receta';
+        btn.style.backgroundColor = 'var(--primary)';
+        document.getElementById('tituloInsumoForm').innerText = '4. Agregar / Editar Insumo Manual o desde PDF';
     }
 
     function limpiarFormularioInsumo() {
-        document.getElementById("ingNombre").value = "";
-        document.getElementById("ingPrecioPkg").value = "";
-        document.getElementById("ingCantPkg").value = "";
-        document.getElementById("ingCantUsada").value = "";
+        document.getElementById('ingNombre').value = '';
+        document.getElementById('ingPrecioPkg').value = '';
+        document.getElementById('ingCantPkg').value = '';
+        document.getElementById('ingCantUsada').value = '';
+        document.getElementById('selectInsumoPdf').value = '';
     }
 
     function eliminarIngrediente(index) {
-        if (indiceEdicion === index) {
-            cancelarEdicion();
-        }
+        if (indiceEdicion === index) cancelarEdicion();
         ingredientes.splice(index, 1);
         actualizarTabla();
         calcularTotales();
     }
 
     function actualizarTabla() {
-        const tbody = document.getElementById("tablaIngredientes");
-        tbody.innerHTML = "";
+        const tbodyBizcochuelo = document.getElementById('tablaBizcochuelo');
+        const tbodyRellenos = document.getElementById('tablaRellenos');
+        const tbodyPacking = document.getElementById('tablaPacking');
 
-        if (ingredientes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No hay ingredientes agregados.</td></tr>';
-            return;
-        }
+        tbodyBizcochuelo.innerHTML = '';
+        tbodyRellenos.innerHTML = '';
+        tbodyPacking.innerHTML = '';
+
+        let countBizcochuelo = 0;
+        let countRellenos = 0;
+        let countPacking = 0;
+
+        let subtotalBiz = 0;
+        let subtotalRel = 0;
+        let subtotalPac = 0;
 
         ingredientes.forEach((ing, index) => {
-            const tr = document.createElement("tr");
+            const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${ing.nombre}</strong></td>
                 <td>${ing.fmtUso}</td>
                 <td>$${ing.costo.toFixed(2)}</td>
-                <td class="actions-cell">
+                <td>
                     <button class="btn btn-warning" onclick="editarIngrediente(${index})">✏️</button>
                     <button class="btn btn-danger" onclick="eliminarIngrediente(${index})">X</button>
                 </td>
             `;
-            tbody.appendChild(tr);
+
+            const cat = ing.categoria || 'bizcochuelo';
+            if (cat === 'bizcochuelo') {
+                tbodyBizcochuelo.appendChild(tr);
+                countBizcochuelo++;
+                subtotalBiz += ing.costo;
+            } else if (cat === 'rellenos') {
+                tbodyRellenos.appendChild(tr);
+                countRellenos++;
+                subtotalRel += ing.costo;
+            } else if (cat === 'packing') {
+                tbodyPacking.appendChild(tr);
+                countPacking++;
+                subtotalPac += ing.costo;
+            }
         });
+
+        document.getElementById('subtotalBizcochuelo').innerText = `$${subtotalBiz.toFixed(2)}`;
+        document.getElementById('subtotalRellenos').innerText = `$${subtotalRel.toFixed(2)}`;
+        document.getElementById('subtotalPacking').innerText = `$${subtotalPac.toFixed(2)}`;
+
+        if (countBizcochuelo === 0) tbodyBizcochuelo.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>';
+        if (countRellenos === 0) tbodyRellenos.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>';
+        if (countPacking === 0) tbodyPacking.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin ítems cargados.</td></tr>';
+
+        const alertWarn = document.getElementById('alertWarningFalta');
+        const faltantes = [];
+
+        if (countBizcochuelo === 0) faltantes.push('Bizcochuelo / Masas');
+        if (countRellenos === 0) faltantes.push('Rellenos');
+        if (countPacking === 0) faltantes.push('Packing');
+
+        if (faltantes.length > 0) {
+            alertWarn.style.display = 'block';
+            alertWarn.innerText = `⚠️ Falta cargar algún item en los costos directos (${faltantes.join(', ')})`;
+        } else {
+            alertWarn.style.display = 'none';
+        }
     }
 
     function calcularTotales() {
-        const rendimiento = Math.max(1, parseFloat(document.getElementById("rendimiento").value) || 1);
-        const horasMdo = parseFloat(document.getElementById("horasMdo").value) || 0;
-        const tarifaMdo = parseFloat(document.getElementById("tarifaMdo").value) || 0;
-        const cifPct = parseFloat(document.getElementById("cifPct").value) || 0;
-        const margenPct = parseFloat(document.getElementById("margenPct").value) || 0;
+        const rendimiento = Math.max(1, parseFloat(document.getElementById('rendimiento').value) || 1);
+        const horasMdo = parseFloat(document.getElementById('horasMdo').value) || 0;
+        const tarifaMdo = parseFloat(document.getElementById('tarifaMdo').value) || 0;
+        const cifPct = parseFloat(document.getElementById('cifPct').value) || 0;
+        const margenPct = parseFloat(document.getElementById('margenPct').value) || 0;
+        const margenBizPct = parseFloat(document.getElementById('margenBizPct').value) || 0;
+        const margenRellenosPct = parseFloat(document.getElementById('margenRellenosPct').value) || 0;
+        const margenPackingPct = parseFloat(document.getElementById('margenPackingPct').value) || 0;
 
         const totalMateriaPrima = ingredientes.reduce((sum, item) => sum + item.costo, 0);
         const totalMdo = horasMdo * tarifaMdo;
         const subtotalDirecto = totalMateriaPrima + totalMdo;
         const totalCif = subtotalDirecto * (cifPct / 100);
-
         const costoTotal = subtotalDirecto + totalCif;
         const costoUnitario = costoTotal / rendimiento;
 
+        const subtotalBiz = ingredientes.filter(i => (i.categoria || 'bizcochuelo') === 'bizcochuelo').reduce((sum, item) => sum + item.costo, 0);
+        const subtotalRellenos = ingredientes.filter(i => i.categoria === 'rellenos').reduce((sum, item) => sum + item.costo, 0);
+        const subtotalPacking = ingredientes.filter(i => i.categoria === 'packing').reduce((sum, item) => sum + item.costo, 0);
+
+        const precioBiz = subtotalBiz * (1 + (margenBizPct / 100));
+        const precioRellenos = subtotalRellenos * (1 + (margenRellenosPct / 100));
+        const precioPacking = subtotalPacking * (1 + (margenPackingPct / 100));
         const precioTotal = costoTotal * (1 + (margenPct / 100));
-        const precioUnitario = precioTotal / rendimiento;
 
-        document.getElementById("resMateriaPrima").innerText = `$${totalMateriaPrima.toFixed(2)}`;
-        document.getElementById("resMdo").innerText = `$${totalMdo.toFixed(2)}`;
-        document.getElementById("resCif").innerText = `$${totalCif.toFixed(2)}`;
-
-        document.getElementById("resCostoTotal").innerText = `$${costoTotal.toFixed(2)}`;
-        document.getElementById("resCostoUnitario").innerText = `$${costoUnitario.toFixed(2)}`;
-        document.getElementById("resPrecioTotal").innerText = `$${precioTotal.toFixed(2)}`;
-        document.getElementById("resPrecioUnitario").innerText = `$${precioUnitario.toFixed(2)}`;
+        document.getElementById('resMateriaPrima').innerText = `$${totalMateriaPrima.toFixed(2)}`;
+        document.getElementById('resMdo').innerText = `$${totalMdo.toFixed(2)}`;
+        document.getElementById('resCif').innerText = `$${totalCif.toFixed(2)}`;
+        document.getElementById('resCostoTotal').innerText = `$${costoTotal.toFixed(2)}`;
+        document.getElementById('resCostoUnitario').innerText = `$${costoUnitario.toFixed(2)}`;
+        document.getElementById('resPrecioBiz').innerText = `$${precioBiz.toFixed(2)}`;
+        document.getElementById('resPrecioRellenos').innerText = `$${precioRellenos.toFixed(2)}`;
+        document.getElementById('resPrecioPacking').innerText = `$${precioPacking.toFixed(2)}`;
+        document.getElementById('resPrecioTotal').innerText = `$${precioTotal.toFixed(2)}`;
     }
 
     function limpiarTodo() {
-        if (confirm("¿Desea limpiar todos los datos del presupuesto?")) {
+        if (confirm('¿Desea limpiar todos los datos del presupuesto actual?')) {
             ingredientes = [];
+            registroArmado = { bizcochuelo: '', diametroTexto: '', sabor: '', rellenos: [], cobertura: '' };
             cancelarEdicion();
             actualizarTabla();
             calcularTotales();
         }
     }
 
-    function exportarReporte() {
-        if (ingredientes.length === 0) {
-            alert("Agregue al menos un ingrediente para exportar.");
+    function guardarPresupuestoLocal() {
+        const payload = {
+            nombreReceta: document.getElementById('nombreReceta').value,
+            rendimiento: document.getElementById('rendimiento').value,
+            horasMdo: document.getElementById('horasMdo').value,
+            tarifaMdo: document.getElementById('tarifaMdo').value,
+            cifPct: document.getElementById('cifPct').value,
+            margenPct: document.getElementById('margenPct').value,
+            margenBizPct: document.getElementById('margenBizPct').value,
+            margenRellenosPct: document.getElementById('margenRellenosPct').value,
+            margenPackingPct: document.getElementById('margenPackingPct').value,
+            ingredientes: ingredientes,
+            pdfConsolidado: pdfConsolidado,
+            registroArmado: registroArmado,
+            timestamp: new Date().toISOString()
+        };
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        alert('Presupuesto guardado en el navegador.');
+    }
+
+    function cargarPresupuestoLocal() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+            alert('No hay un presupuesto guardado en este navegador.');
             return;
         }
 
-        const nombreReceta = document.getElementById("nombreReceta").value.trim() || "Receta";
-        const fecha = new Date().toLocaleDateString();
+        try {
+            const payload = JSON.parse(saved);
+            document.getElementById('nombreReceta').value = payload.nombreReceta || 'Torta Personalizada Especial';
+            document.getElementById('rendimiento').value = payload.rendimiento || 12;
+            document.getElementById('horasMdo').value = payload.horasMdo || 2.5;
+            document.getElementById('tarifaMdo').value = payload.tarifaMdo || 1500;
+            document.getElementById('cifPct').value = payload.cifPct || 15;
+            document.getElementById('margenPct').value = payload.margenPct || 40;
+            document.getElementById('margenBizPct').value = payload.margenBizPct || 40;
+            document.getElementById('margenRellenosPct').value = payload.margenRellenosPct || 35;
+            document.getElementById('margenPackingPct').value = payload.margenPackingPct || 30;
 
-        let texto = `========================================\n`;
-        texto += ` PRESUPUESTO: ${nombreReceta.toUpperCase()}\n`;
-        texto += ` Fecha: ${fecha}\n`;
-        texto += `========================================\n\n`;
+            ingredientes = Array.isArray(payload.ingredientes) ? payload.ingredientes : [];
+            pdfConsolidado = Array.isArray(payload.pdfConsolidado) ? payload.pdfConsolidado : [];
+            registroArmado = payload.registroArmado || { bizcochuelo: '', diametroTexto: '', sabor: '', rellenos: [], cobertura: '' };
 
-        texto += `INGREDIENTES:\n`;
-        ingredientes.forEach(ing => {
-            texto += `- ${ing.nombre} (${ing.fmtUso}): $${ing.costo.toFixed(2)}\n`;
-        });
+            actualizarTabla();
+            calcularTotales();
+            alert('Presupuesto recuperado correctamente.');
+        } catch (error) {
+            console.error(error);
+            alert('El presupuesto guardado está corrupto o no se pudo recuperar.');
+        }
+    }
 
-        texto += `\nRESUMEN:\n`;
-        texto += `- Materia Prima: ${document.getElementById("resMateriaPrima").innerText}\n`;
-        texto += `- Mano de Obra: ${document.getElementById("resMdo").innerText}\n`;
-        texto += `- CIF: ${document.getElementById("resCif").innerText}\n`;
-        texto += `----------------------------------------\n`;
-        texto += `- COSTO TOTAL LOTE: ${document.getElementById("resCostoTotal").innerText}\n`;
-        texto += `- Costo por Unidad: ${document.getElementById("resCostoUnitario").innerText}\n`;
-        texto += `- PRECIO VENTA SUGERIDO: ${document.getElementById("resPrecioTotal").innerText}\n`;
-        texto += `- Precio por Unidad: ${document.getElementById("resPrecioUnitario").innerText}\n`;
-        texto += `========================================\n`;
+    function borrarPresupuestoLocal() {
+        if (confirm('¿Desea borrar el presupuesto guardado en el navegador?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            alert('Se borró el presupuesto guardado.');
+        }
+    }
 
-        const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
-        const link = document.createElement("a");
+    function exportarReporteCliente() {
+        if (ingredientes.length === 0) {
+            alert('Agregue al menos un insumo o preparación para exportar el presupuesto.');
+            return;
+        }
+
+        const nombreReceta = document.getElementById('nombreReceta').value.trim() || 'Torta Especial';
+        const modo = document.getElementById('modoReporte').value;
+        const precioTotal = document.getElementById('resPrecioTotal').innerText;
+
+        let texto = modo === 'cliente'
+            ? 'Espero que te encuentres bien, gracias por elegirnos. A continuación te envío el presupuesto solicitado:\n\n'
+            : 'PRESUPUESTO INTERNO - COSTEO DE PRODUCCIÓN\n\n';
+
+        texto += `🎂 Producto: ${nombreReceta}\n`;
+
+        if (registroArmado.diametroTexto) texto += `📐 Diámetro: ${registroArmado.diametroTexto}\n`;
+        if (registroArmado.sabor) texto += `🥮 Base: ${registroArmado.sabor}\n`;
+        if (registroArmado.rellenos.length > 0) {
+            texto += '🍰 Rellenos: ' + registroArmado.rellenos.join(', ') + '\n';
+        }
+        if (registroArmado.cobertura) texto += `🎨 Cobertura: ${registroArmado.cobertura}\n`;
+
+        if (modo === 'interno') {
+            texto += `\nMateria prima total: ${document.getElementById('resMateriaPrima').innerText}\n`;
+            texto += `M.O.D.: ${document.getElementById('resMdo').innerText}\n`;
+            texto += `CIF: ${document.getElementById('resCif').innerText}\n`;
+            texto += `Costo total lote: ${document.getElementById('resCostoTotal').innerText}\n`;
+            texto += `Costo unitario: ${document.getElementById('resCostoUnitario').innerText}\n`;
+            texto += `Margen general: ${document.getElementById('margenPct').value}%\n`;
+        }
+
+        texto += `\n💰 VALOR TOTAL DEL PRESUPUESTO: ${precioTotal}\n\n`;
+
+        if (modo === 'cliente') {
+            texto += 'Quedo a tu entera disposición por cualquier duda o para confirmar tu pedido. ¡Muchas gracias!';
+        } else {
+            texto += '--- COSTEO INTERNO ---\n';
+            ingredientes.forEach((item, index) => {
+                texto += `${index + 1}. ${item.nombre} | ${item.fmtUso} | $${item.costo.toFixed(2)}\n`;
+            });
+        }
+
+        const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `Presupuesto_${nombreReceta.replace(/\s+/g, "_")}.txt`;
+        link.download = `Presupuesto_${nombreReceta.replace(/\s+/g, '_')}.txt`;
         link.click();
     }
+
+    function exportarPdfReal() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            alert('La librería de PDF no está lista aún. Inténtalo nuevamente en unos segundos.');
+            return;
+        }
+
+        if (ingredientes.length === 0) {
+            alert('Agregue al menos un insumo para exportar el PDF.');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const nombreReceta = document.getElementById('nombreReceta').value.trim() || 'Torta Especial';
+
+        doc.setFontSize(18);
+        doc.text('Presupuesto de Pastelería', 14, 18);
+        doc.setFontSize(11);
+        doc.text(`Producto: ${nombreReceta}`, 14, 30);
+        doc.text(`Rendimiento: ${document.getElementById('rendimiento').value} porciones`, 14, 38);
+        doc.text(`M.O.D.: ${document.getElementById('resMdo').innerText}`, 14, 46);
+        doc.text(`Costo total: ${document.getElementById('resCostoTotal').innerText}`, 14, 54);
+        doc.text(`Precio venta recomendado: ${document.getElementById('resPrecioTotal').innerText}`, 14, 62);
+
+        let y = 78;
+        doc.setFontSize(12);
+        doc.text('Insumos incluidos:', 14, y);
+        y += 8;
+        doc.setFontSize(10);
+
+        ingredientes.forEach((item, index) => {
+            if (y > 265) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.text(`${index + 1}. ${item.nombre} | ${item.fmtUso} | $${item.costo.toFixed(2)}`, 14, y);
+            y += 8;
+        });
+
+        doc.save(`Presupuesto_${nombreReceta.replace(/\s+/g, '_')}.pdf`);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarPresupuestoLocal();
+    });
 </script>
 
 </body>
